@@ -1,5 +1,6 @@
 package com.benyq.tikbili.ui
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.benyq.tikbili.ui.base.mvi.UiEvent
 import com.benyq.tikbili.ui.base.mvi.UiState
@@ -19,7 +20,16 @@ data class MainState(
 
 class ToastEvent: UiEvent
 
-class MainViewModel: ViewModel() {
+class MainViewModel(private val savedStateHandle: SavedStateHandle): ViewModel() {
 
     private val mainContainer by containers(MainState("benyq", 26))
+
+    var currentFragmentTag: String
+        get() {
+            return savedStateHandle["fragmentTag"] ?: ""
+        }
+        set(value) {
+            savedStateHandle["fragmentTag"] = value
+        }
+
 }
