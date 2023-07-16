@@ -16,13 +16,13 @@ import com.benyq.tikbili.ui.base.mvi.extension.containers
 data class MainState(
     val name: String,
     val age: Int
-): UiState
+) : UiState
 
-class ToastEvent: UiEvent
+class ToastEvent : UiEvent
 
-class MainViewModel(private val savedStateHandle: SavedStateHandle): ViewModel() {
+class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
 
-    private val mainContainer by containers(MainState("benyq", 26))
+    private val mainContainer by containers<MainState, UiEvent>(MainState("benyq", 26))
 
     var currentFragmentTag: String
         get() {

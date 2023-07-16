@@ -11,8 +11,8 @@ import com.benyq.tikbili.ui.base.mvi.UiState
 /**
  * 构建viewModel的Ui容器，存储Ui状态和一次性事件
  */
-fun <STATE : UiState> ViewModel.containers(
+fun <STATE : UiState, SINGLE_EVENT : UiEvent> ViewModel.containers(
     initialState: STATE,
-): Lazy<MutableContainer<STATE, UiEvent>> {
+): Lazy<MutableContainer<STATE, SINGLE_EVENT>> {
     return ContainerLazy(initialState, viewModelScope)
 }
