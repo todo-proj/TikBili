@@ -1,18 +1,17 @@
-package com.benyq.tikbili.ui
+package com.benyq.tikbili.ui.main
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.withCreated
 import com.benyq.tikbili.R
 import com.benyq.tikbili.databinding.ActivityMainBinding
+import com.benyq.tikbili.ext.fullScreen
+import com.benyq.tikbili.ext.systemBarColor
 import com.benyq.tikbili.ui.base.BaseActivity
+import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
+import com.benyq.tikbili.ui.base.mvi.extension.collectState
 import com.benyq.tikbili.ui.video.FragmentVideoContainer
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
@@ -21,7 +20,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun getLayoutId() = R.layout.activity_main
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        systemBarColor(Color.BLACK)
         showFragment("Video")
+        viewModel.mainContainer.uiStateFlow.collectState(this) {
+
+        }
+        viewModel.mainContainer.singleEventFlow.collectSingleEvent(this) {
+        }
     }
 
 

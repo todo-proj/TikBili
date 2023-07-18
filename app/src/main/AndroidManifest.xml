@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".TikBiliApp"
@@ -16,7 +16,7 @@
         android:theme="@style/Theme.TikBili"
         tools:targetApi="31">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,12 +24,21 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:exported="false" />
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="design_width_in_dp"
-            android:value="360"/>
+            android:value="360" />
         <meta-data
             android:name="design_height_in_dp"
-            android:value="640"/>
+            android:value="640" />
     </application>
 
 </manifest>

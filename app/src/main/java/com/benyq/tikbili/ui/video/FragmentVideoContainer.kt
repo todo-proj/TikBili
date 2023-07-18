@@ -1,6 +1,8 @@
 package com.benyq.tikbili.ui.video
 
+import android.opengl.EGL14
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
@@ -28,7 +30,6 @@ class FragmentVideoContainer: BaseFragment<FragmentVideoContainerBinding>(R.layo
         dataBind.vpVideo.adapter = fragmentAdapter
         dataBind.vpVideo.orientation = ViewPager2.ORIENTATION_VERTICAL
         dataBind.vpVideo.overScrollNever()
-
         viewModel.homePageContainer.singleEventFlow.collectSingleEvent(viewLifecycleOwner) {
             when(it) {
                 is VideoContainerEvent.ToastEvent -> {

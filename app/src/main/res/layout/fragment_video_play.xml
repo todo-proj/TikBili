@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black">
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/player_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:surface_type="texture_view"/>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="60dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:drawableTopCompat="@drawable/ic_thumb_up"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="12"/>
+
+            <TextView
+                android:id="@+id/tv_reply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:drawableTopCompat="@drawable/ic_comment"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="12"/>
+
+            <TextView
+                android:id="@+id/tv_coin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:drawableTopCompat="@drawable/ic_coin"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="12"/>
+            <TextView
+                android:id="@+id/tv_star"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:drawableTopCompat="@drawable/ic_star"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="12"/>
+
+            <TextView
+                android:id="@+id/tv_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:drawableTopCompat="@drawable/ic_share"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="12"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

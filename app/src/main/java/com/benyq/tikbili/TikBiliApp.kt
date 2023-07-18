@@ -1,6 +1,7 @@
 package com.benyq.tikbili
 
 import android.app.Application
+import com.tencent.mmkv.MMKV
 
 /**
  *
@@ -15,5 +16,7 @@ class TikBiliApp: Application() {
     override fun onCreate() {
         super.onCreate()
         appCtx = this
+
+        MMKV.initialize(this)
     }
 }

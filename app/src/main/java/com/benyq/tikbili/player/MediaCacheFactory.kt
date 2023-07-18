@@ -36,7 +36,10 @@ object MediaCacheFactory {
                     )
                 )
                 .setUpstreamDataSourceFactory(
-                    DefaultHttpDataSource.Factory().setAllowCrossProtocolRedirects(false)
+                    DefaultHttpDataSource.Factory()
+                         // B站防盗链
+                        .setDefaultRequestProperties(mutableMapOf("referer" to "https://www.bilibili.com"))
+                        .setAllowCrossProtocolRedirects(false)
                         .setConnectTimeoutMs(8000)
                         .setReadTimeoutMs(8000)
                         .setUserAgent("MY_Exoplayer")

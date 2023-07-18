@@ -1,13 +1,18 @@
 package com.benyq.tikbili.bilibili.model
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+data class RecommendVideoData(val item: List<RecommendVideoModel>)
+
+@Parcelize
 data class RecommendVideoModel(
     @SerializedName("bvid")
     val bvid: String,
     @SerializedName("cid")
-    val cid: Int,
+    val cid: String,
     @SerializedName("duration")
     val duration: Int,
     @SerializedName("enable_vt")
@@ -38,16 +43,19 @@ data class RecommendVideoModel(
     val trackId: String,
     @SerializedName("uri")
     val uri: String
-) {
+): Parcelable {
+
+    @Parcelize
     data class Owner(
         @SerializedName("face")
         val face: String,
         @SerializedName("mid")
-        val mid: Int,
+        val mid: Long,
         @SerializedName("name")
         val name: String
-    )
+    ): Parcelable
 
+    @Parcelize
     data class Stat(
         @SerializedName("danmaku")
         val danmaku: Int,
@@ -57,5 +65,5 @@ data class RecommendVideoModel(
         val view: Int,
         @SerializedName("vt")
         val vt: Int
-    )
+    ): Parcelable
 }

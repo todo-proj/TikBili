@@ -9,7 +9,7 @@ class VideoStateAdapter(fragment: Fragment): FragmentStateAdapter(fragment) {
 
     override fun getItemCount() = dataList.size
     override fun createFragment(position: Int): Fragment {
-        return FragmentVideoPlayer()
+        return FragmentVideoPlay.newInstance(dataList[position])
     }
 
     fun updateData(data: List<RecommendVideoModel>) {
