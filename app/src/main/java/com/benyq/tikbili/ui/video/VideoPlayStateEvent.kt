@@ -1,5 +1,7 @@
 package com.benyq.tikbili.ui.video
 
+import android.graphics.Matrix
+import android.util.Size
 import com.benyq.tikbili.bilibili.model.VideoDetailModel
 import com.benyq.tikbili.ui.base.mvi.UiEvent
 import com.benyq.tikbili.ui.base.mvi.UiState
@@ -15,10 +17,11 @@ data class VideoPlayState(
     val videoRotateMode: VideoRotateMode = VideoRotateMode.PORTRAIT,
     //是否全屏播放
     val fullScreen: Boolean = false,
+    val isPlaying: Boolean = false,
     val title: String = "",
-    val firstFrame: String = "",
     val stat: Stat = Stat(),
     val videoUrl: String = "",
+    val videoMatrix: Matrix = Matrix(),
     val relatedVideos: List<VideoDetailModel.UgcSeason.Section.Episode> = emptyList()
 ): UiState {
     enum class VideoRotateMode {
@@ -40,4 +43,11 @@ data class VideoPlayState(
 
 sealed class VideoPlayEvent: UiEvent {
 
+}
+
+sealed class VideoPlayIntent {
+    object FillScreenPlayIntent : VideoPlayIntent()
+    data class ResizePlayViewIntent(val viewSize: Size, val videoSize: Size): VideoPlayIntent()
+    data class LikeVideoIntent(val bvid: String): VideoPlayIntent()
+    data class PlayPauseVideoIntent(val play: Boolean): VideoPlayIntent()
 }

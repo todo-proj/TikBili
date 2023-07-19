@@ -1,5 +1,6 @@
 package com.benyq.tikbili.ui.main
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -51,5 +52,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             it.commit()
         }
         viewModel.currentFragmentTag = tag
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
     }
 }

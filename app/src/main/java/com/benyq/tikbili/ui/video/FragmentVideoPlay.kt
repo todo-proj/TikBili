@@ -1,22 +1,26 @@
 package com.benyq.tikbili.ui.video
 
 import android.content.pm.ActivityInfo
+import android.graphics.Matrix
 import android.os.Bundle
+import android.util.Log
+import android.util.Size
+import android.view.View
+import android.view.View.OnLayoutChangeListener
 import androidx.fragment.app.viewModels
 import com.benyq.tikbili.R
-import com.benyq.tikbili.bilibili.model.RecommendVideoData
 import com.benyq.tikbili.bilibili.model.RecommendVideoModel
 import com.benyq.tikbili.databinding.FragmentVideoPlayBinding
 import com.benyq.tikbili.ext.fullScreen
 import com.benyq.tikbili.ext.ifFalse
 import com.benyq.tikbili.ext.ifTrue
-import com.benyq.tikbili.player.MediaCacheFactory
+import com.benyq.tikbili.ext.visibleOrGone
+import com.benyq.tikbili.player.ExoVideoPlayer
 import com.benyq.tikbili.ui.base.BaseFragment
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import kotlin.math.min
 
 /**
  *
@@ -39,19 +43,46 @@ class FragmentVideoPlay :
     }
 
     private val viewModel by viewModels<VideoPlayViewModel>()
-    private lateinit var player: ExoPlayer
+    private lateinit var player: ExoVideoPlayer
 
     private lateinit var recommendVideoModel: RecommendVideoModel
 
     override fun onFragmentCreated(savedInstanceState: Bundle?) {
         recommendVideoModel = requireArguments().getParcelable(EXTRA_VIDEO)!!
 
-        player = ExoPlayer.Builder(requireActivity()).build()
-        player.repeatMode = Player.REPEAT_MODE_ALL
+        player = ExoVideoPlayer(requireContext(), true).apply {
+            create()
+            setVideoPlayListener(object : ExoVideoPlayer.OnVideoPlayListener {
+                override fun onVideoSizeChanged(width: Int, height: Int) {
+                    viewModel.postIntent(
+                        VideoPlayIntent.ResizePlayViewIntent(
+                            Size(
+                                dataBind.playerView.width,
+                                dataBind.playerView.height
+                            ), Size(width, height)
+                        )
+                    )
+                }
 
-        dataBind.playerView.player = player
-        player.playWhenReady = false
-
+                override fun onPlayingChanged(isPlaying: Boolean) {
+                    viewModel.postIntent(VideoPlayIntent.PlayPauseVideoIntent(isPlaying))
+                }
+            })
+        }
+        player.setRenderView(dataBind.playerView)
+        dataBind.playerView.setOnClickListener {
+            if (player.isVideoPlaying) {
+                player.pauseVideo()
+            }else {
+                player.startVideo()
+            }
+        }
+        dataBind.tvLike.setOnClickListener {
+            viewModel.postIntent(VideoPlayIntent.LikeVideoIntent(recommendVideoModel.bvid))
+        }
+        dataBind.ivFullscreen.setOnClickListener {
+            viewModel.postIntent(VideoPlayIntent.FillScreenPlayIntent)
+        }
         viewModel.container.uiStateFlow.collectState(viewLifecycleOwner) {
             collectPartial(VideoPlayState::fullScreen) {
                 it.ifTrue {
@@ -67,6 +98,7 @@ class FragmentVideoPlay :
 
             collectPartial(VideoPlayState::videoRotateMode) {
                 //显示全屏播放按钮
+                dataBind.ivFullscreen.visibleOrGone(it == VideoPlayState.VideoRotateMode.LANDSCAPE)
             }
             collectPartial(VideoPlayState::stat) {
                 dataBind.tvCoin.text = it.coin
@@ -77,13 +109,17 @@ class FragmentVideoPlay :
             }
             collectPartial(VideoPlayState::videoUrl) {
                 if (it.isNotEmpty()) {
-                    val mediaItem = MediaItem.fromUri(it)
-                    val mediaSource =
-                        ProgressiveMediaSource.Factory(MediaCacheFactory.getCacheFactory(requireActivity()))
-                            .createMediaSource(mediaItem)
-                    player.setMediaSource(mediaSource)
-                    player.prepare()
+                    player.playVideo(it)
                 }
+            }
+            collectPartial(VideoPlayState::videoMatrix) { matrix->
+                dataBind.playerView.let {
+                    it.setTransform(matrix)
+                    it.postInvalidate()
+                }
+            }
+            collectPartial(VideoPlayState::isPlaying) {
+                dataBind.ivPause.visibleOrGone(!it)
             }
         }
 
@@ -93,12 +129,12 @@ class FragmentVideoPlay :
 
     override fun onResume() {
         super.onResume()
-        player.play()
+        player.startVideo()
     }
 
     override fun onPause() {
         super.onPause()
-        player.pause()
+        player.pauseVideo()
     }
 
     override fun onDestroyView() {

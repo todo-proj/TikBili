@@ -27,6 +27,7 @@ class FragmentVideoContainer: BaseFragment<FragmentVideoContainerBinding>(R.layo
     private val fragmentAdapter by lazy { VideoStateAdapter(this) }
 
     override fun onFragmentCreated(savedInstanceState: Bundle?) {
+        dataBind.vpVideo.offscreenPageLimit = 3
         dataBind.vpVideo.adapter = fragmentAdapter
         dataBind.vpVideo.orientation = ViewPager2.ORIENTATION_VERTICAL
         dataBind.vpVideo.overScrollNever()
