@@ -1,12 +1,16 @@
 package com.benyq.tikbili.player
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.TextureView
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.Timeline
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.video.VideoSize
 
@@ -30,6 +34,9 @@ class ExoVideoPlayer(private val context: Context, private val playWhenReady: Bo
     var isVideoPlaying = false
         private set
 
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private lateinit var updateProgressAction: Runnable
+
     private val mMediaEventListener = object : Player.Listener {
 
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
@@ -42,6 +49,9 @@ class ExoVideoPlayer(private val context: Context, private val playWhenReady: Bo
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             isVideoPlaying = isPlaying
             mOnVideoPlayListener?.onPlayingChanged(isPlaying)
+            if (isPlaying) {
+                mainHandler.post(updateProgressAction)
+            }
         }
 
         override fun onPlayerError(error: PlaybackException) {
@@ -58,10 +68,24 @@ class ExoVideoPlayer(private val context: Context, private val playWhenReady: Bo
             super.onVideoSizeChanged(videoSize)
             mOnVideoPlayListener?.onVideoSizeChanged(videoSize.width, videoSize.height)
         }
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            super.onTimelineChanged(timeline, reason)
+            Log.d(TAG, "onTimelineChanged: $timeline.dur")
+        }
     }
 
     fun create() {
         createMediaPlayer(context, playWhenReady)
+        updateProgressAction = object: Runnable {
+            override fun run() {
+                val position = mSimpleExoPlayer?.currentPosition ?: 0L
+                val bufferPosition = mSimpleExoPlayer?.contentBufferedPosition ?: 0L
+                val duration = mSimpleExoPlayer?.duration ?: 0L
+                mOnVideoPlayListener?.onProgressUpdate(position, bufferPosition)
+                mainHandler.postDelayed(this, 500)
+            }
+        }
     }
 
     fun playVideo(url: String) {
@@ -93,6 +117,10 @@ class ExoVideoPlayer(private val context: Context, private val playWhenReady: Bo
 
     fun getPlayState(): Int {
         return mSimpleExoPlayer?.playbackState ?: Player.STATE_IDLE
+    }
+
+    fun seekTo(progress: Long) {
+        mSimpleExoPlayer?.seekTo(progress)
     }
 
     fun pauseVideo() {
@@ -139,5 +167,7 @@ class ExoVideoPlayer(private val context: Context, private val playWhenReady: Bo
         fun onError(error: String){}
 
         fun onVideoSizeChanged(width: Int, height: Int){}
+
+        fun onProgressUpdate(position: Long, bufferedPosition: Long){}
     }
 }

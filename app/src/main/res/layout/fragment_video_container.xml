@@ -4,28 +4,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.benyq.tikbili.ui.widget.SideDragLayout
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vpVideo"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:background="@color/purple_500"
-                android:text="left"/>
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/vpVideo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-            <TextView
-                android:background="@color/teal_700"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:text="right"/>
-
-        </com.benyq.tikbili.ui.widget.SideDragLayout>
+            android:layout_height="match_parent"/>
 
     </FrameLayout>
 

@@ -31,6 +31,7 @@ class SideDragLayout @JvmOverloads constructor(
     private lateinit var rightChild: View
 
     private val viewDragHelper: ViewDragHelper
+    private var moveDistanceX = 0
 
     private val viewDragCallback = object : ViewDragHelper.Callback() {
         override fun tryCaptureView(child: View, pointerId: Int): Boolean {
@@ -63,7 +64,7 @@ class SideDragLayout @JvmOverloads constructor(
             dx: Int,
             dy: Int,
         ) {
-            Log.d("benyq", "onViewPositionChanged: $changedView, $dx")
+            Log.d("SideDragLayout", "onViewPositionChanged: $changedView, $dx")
             //做内容布局移动的时候，详情布局跟着同样的移动
             if (changedView == centerChild) {
                 rightChild.layout(rightChild.getLeft() + dx, rightChild.getTop() + dy,
@@ -73,9 +74,11 @@ class SideDragLayout @JvmOverloads constructor(
                 centerChild.layout(centerChild.getLeft() + dx, centerChild.getTop() + dy,
                     centerChild.getRight() + dx, centerChild.getBottom() + dy)
             }
+            moveDistanceX += dx
         }
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
+            Log.d("SideDragLayout", "onViewReleased: $xvel")
             super.onViewReleased(releasedChild, xvel, yvel)
             //松开之后，只要移动超过一半就可以打开或者关闭
             val detailWidth = rightChild.measuredWidth
@@ -118,6 +121,7 @@ class SideDragLayout @JvmOverloads constructor(
             throw IllegalArgumentException("必须存在3个子View")
         }
 
+        Log.d("SideDragLayout", "onLayout")
         centerChild.layout(0, 0, centerChild.measuredWidth, centerChild.measuredHeight)
         leftChild.layout(-leftChild.measuredWidth, 0, 0, leftChild.measuredHeight)
         rightChild.layout(
@@ -127,25 +131,6 @@ class SideDragLayout @JvmOverloads constructor(
             rightChild.measuredHeight
         )
     }
-
-//    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-//        when (ev?.actionMasked) {
-//            MotionEvent.ACTION_DOWN -> {
-//                touchX = ev.x
-//                touchY = ev.y
-//                return true
-//            }
-//
-//            MotionEvent.ACTION_MOVE -> {
-//                val disX = ev.x - touchX
-//                val disY = ev.y - touchY
-//                if (abs(disX) > abs(disY)) {
-//                    return true
-//                }
-//            }
-//        }
-//        return super.onInterceptTouchEvent(ev)
-//    }
 
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {

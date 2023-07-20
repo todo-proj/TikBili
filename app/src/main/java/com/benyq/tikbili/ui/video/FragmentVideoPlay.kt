@@ -7,6 +7,8 @@ import android.util.Log
 import android.util.Size
 import android.view.View
 import android.view.View.OnLayoutChangeListener
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.fragment.app.viewModels
 import com.benyq.tikbili.R
 import com.benyq.tikbili.bilibili.model.RecommendVideoModel
@@ -16,10 +18,12 @@ import com.benyq.tikbili.ext.ifFalse
 import com.benyq.tikbili.ext.ifTrue
 import com.benyq.tikbili.ext.visibleOrGone
 import com.benyq.tikbili.player.ExoVideoPlayer
+import com.benyq.tikbili.ui.LifeCycleLogObserver
 import com.benyq.tikbili.ui.base.BaseFragment
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import kotlin.math.log
 import kotlin.math.min
 
 /**
@@ -48,9 +52,10 @@ class FragmentVideoPlay :
     private lateinit var recommendVideoModel: RecommendVideoModel
 
     override fun onFragmentCreated(savedInstanceState: Bundle?) {
+        viewLifecycleOwner.lifecycle.addObserver(LifeCycleLogObserver())
         recommendVideoModel = requireArguments().getParcelable(EXTRA_VIDEO)!!
 
-        player = ExoVideoPlayer(requireContext(), true).apply {
+        player = ExoVideoPlayer(requireContext(), false).apply {
             create()
             setVideoPlayListener(object : ExoVideoPlayer.OnVideoPlayListener {
                 override fun onVideoSizeChanged(width: Int, height: Int) {
@@ -67,6 +72,10 @@ class FragmentVideoPlay :
                 override fun onPlayingChanged(isPlaying: Boolean) {
                     viewModel.postIntent(VideoPlayIntent.PlayPauseVideoIntent(isPlaying))
                 }
+
+                override fun onProgressUpdate(position: Long, bufferedPosition: Long) {
+
+                }
             })
         }
         player.setRenderView(dataBind.playerView)
@@ -77,6 +86,23 @@ class FragmentVideoPlay :
                 player.startVideo()
             }
         }
+        dataBind.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    val position = (progress * 1f / dataBind.seekBar.max * player.getDuration()).toLong()
+                    player.seekTo(position)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+        })
         dataBind.tvLike.setOnClickListener {
             viewModel.postIntent(VideoPlayIntent.LikeVideoIntent(recommendVideoModel.bvid))
         }
