@@ -37,10 +37,9 @@ class SplashViewModel: BaseViewModel() {
             ((it as? ApiThrowable)?.code == BiliBiliConstant.NOT_LOGIN).ifTrue {
                 //未登录，滚去登录
                 container.sendEvent(SplashEvent.ToLoginEvent)
+                return@catch
             }
-            if (it is TimeoutCancellationException) {
-                container.sendEvent(SplashEvent.ToMainEvent)
-            }
+            container.sendEvent(SplashEvent.ToMainEvent)
         }.launchIn(viewModelScope)
     }
 

@@ -36,6 +36,9 @@ class FragmentVideoContainer: BaseFragment<FragmentVideoContainerBinding>(R.layo
                 is VideoContainerEvent.ToastEvent -> {
                     Toast.makeText(requireActivity(), it.message, Toast.LENGTH_SHORT).show()
                 }
+                is VideoContainerEvent.VideoModelEvent -> {
+                    fragmentAdapter.updateData(it.data)
+                }
             }
         }
         viewModel.homePageContainer.uiStateFlow.collectState(viewLifecycleOwner) {
@@ -45,9 +48,6 @@ class FragmentVideoContainer: BaseFragment<FragmentVideoContainerBinding>(R.layo
                 }else {
                     requireActivity().hideLoading()
                 }
-            }
-            collectPartial(VideoContainerState::data) {
-                fragmentAdapter.updateData(it)
             }
         }
         viewModel.loadHomeVideo()

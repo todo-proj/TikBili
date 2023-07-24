@@ -122,12 +122,12 @@ class SideDragLayout @JvmOverloads constructor(
         }
 
         Log.d("SideDragLayout", "onLayout")
-        centerChild.layout(0, 0, centerChild.measuredWidth, centerChild.measuredHeight)
+        centerChild.layout(moveDistanceX, 0, centerChild.measuredWidth + moveDistanceX, centerChild.measuredHeight)
         leftChild.layout(-leftChild.measuredWidth, 0, 0, leftChild.measuredHeight)
         rightChild.layout(
-            centerChild.measuredWidth,
+            centerChild.measuredWidth + moveDistanceX,
             0,
-            rightChild.measuredWidth + centerChild.measuredWidth,
+            rightChild.measuredWidth + centerChild.measuredWidth + moveDistanceX,
             rightChild.measuredHeight
         )
     }

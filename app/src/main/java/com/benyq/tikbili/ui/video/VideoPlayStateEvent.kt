@@ -17,11 +17,8 @@ data class VideoPlayState(
     val videoRotateMode: VideoRotateMode = VideoRotateMode.PORTRAIT,
     //是否全屏播放
     val fullScreen: Boolean = false,
-    val isPlaying: Boolean = false,
     val title: String = "",
     val stat: Stat = Stat(),
-    val videoUrl: String = "",
-    val videoMatrix: Matrix = Matrix(),
     val relatedVideos: List<VideoDetailModel.UgcSeason.Section.Episode> = emptyList()
 ): UiState {
     enum class VideoRotateMode {
@@ -42,12 +39,10 @@ data class VideoPlayState(
 
 
 sealed class VideoPlayEvent: UiEvent {
-
+    data class VideoPlayUrlEvent(val videoUrl: String = ""): VideoPlayEvent()
 }
 
 sealed class VideoPlayIntent {
     object FillScreenPlayIntent : VideoPlayIntent()
-    data class ResizePlayViewIntent(val viewSize: Size, val videoSize: Size): VideoPlayIntent()
     data class LikeVideoIntent(val bvid: String): VideoPlayIntent()
-    data class PlayPauseVideoIntent(val play: Boolean): VideoPlayIntent()
 }

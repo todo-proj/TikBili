@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextureView
+                <com.google.android.exoplayer2.ui.PlayerView
                     android:id="@+id/player_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -87,7 +87,6 @@
 
                 </LinearLayout>
 
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -97,12 +96,6 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
-                    <SeekBar
-                        android:id="@+id/seek_bar"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="match_parent"/>
-
                     <ImageView
                         android:id="@+id/iv_fullscreen"
                         android:layout_width="30dp"
@@ -110,16 +103,6 @@
                         android:src="@drawable/ic_fullscreen" />
 
                 </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/iv_pause"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@drawable/ic_play_circle"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

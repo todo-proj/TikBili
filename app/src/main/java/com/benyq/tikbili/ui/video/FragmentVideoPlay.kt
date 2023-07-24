@@ -18,10 +18,15 @@ import com.benyq.tikbili.ext.ifFalse
 import com.benyq.tikbili.ext.ifTrue
 import com.benyq.tikbili.ext.visibleOrGone
 import com.benyq.tikbili.player.ExoVideoPlayer
+import com.benyq.tikbili.player.MediaCacheFactory
 import com.benyq.tikbili.ui.LifeCycleLogObserver
 import com.benyq.tikbili.ui.base.BaseFragment
+import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import kotlin.math.log
 import kotlin.math.min
@@ -47,7 +52,7 @@ class FragmentVideoPlay :
     }
 
     private val viewModel by viewModels<VideoPlayViewModel>()
-    private lateinit var player: ExoVideoPlayer
+    private lateinit var player: SimpleExoPlayer
 
     private lateinit var recommendVideoModel: RecommendVideoModel
 
@@ -55,54 +60,10 @@ class FragmentVideoPlay :
         viewLifecycleOwner.lifecycle.addObserver(LifeCycleLogObserver())
         recommendVideoModel = requireArguments().getParcelable(EXTRA_VIDEO)!!
 
-        player = ExoVideoPlayer(requireContext(), false).apply {
-            create()
-            setVideoPlayListener(object : ExoVideoPlayer.OnVideoPlayListener {
-                override fun onVideoSizeChanged(width: Int, height: Int) {
-                    viewModel.postIntent(
-                        VideoPlayIntent.ResizePlayViewIntent(
-                            Size(
-                                dataBind.playerView.width,
-                                dataBind.playerView.height
-                            ), Size(width, height)
-                        )
-                    )
-                }
-
-                override fun onPlayingChanged(isPlaying: Boolean) {
-                    viewModel.postIntent(VideoPlayIntent.PlayPauseVideoIntent(isPlaying))
-                }
-
-                override fun onProgressUpdate(position: Long, bufferedPosition: Long) {
-
-                }
-            })
-        }
-        player.setRenderView(dataBind.playerView)
-        dataBind.playerView.setOnClickListener {
-            if (player.isVideoPlaying) {
-                player.pauseVideo()
-            }else {
-                player.startVideo()
-            }
-        }
-        dataBind.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    val position = (progress * 1f / dataBind.seekBar.max * player.getDuration()).toLong()
-                    player.seekTo(position)
-                }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-        })
+        player = SimpleExoPlayer.Builder(requireContext()).build()
+        player.repeatMode = Player.REPEAT_MODE_ALL
+        player.playWhenReady = false
+        dataBind.playerView.player = player
         dataBind.tvLike.setOnClickListener {
             viewModel.postIntent(VideoPlayIntent.LikeVideoIntent(recommendVideoModel.bvid))
         }
@@ -133,34 +94,35 @@ class FragmentVideoPlay :
                 dataBind.tvStar.text = it.favorite
                 dataBind.tvReply.text = it.reply
             }
-            collectPartial(VideoPlayState::videoUrl) {
-                if (it.isNotEmpty()) {
-                    player.playVideo(it)
+        }
+        viewModel.container.singleEventFlow.collectSingleEvent(viewLifecycleOwner) { event ->
+            when(event) {
+                is VideoPlayEvent.VideoPlayUrlEvent -> {
+                    if (event.videoUrl.isNotEmpty()) {
+                        val mediaItem = MediaItem.Builder()
+                            .setUri(event.videoUrl)
+                            .build()
+                        val mediaSource: ProgressiveMediaSource =
+                            ProgressiveMediaSource.Factory(MediaCacheFactory.getCacheFactory(requireContext()))
+                                .createMediaSource(mediaItem)
+                        player.setMediaSource(mediaSource)
+                        player.prepare()
+                    }
                 }
-            }
-            collectPartial(VideoPlayState::videoMatrix) { matrix->
-                dataBind.playerView.let {
-                    it.setTransform(matrix)
-                    it.postInvalidate()
-                }
-            }
-            collectPartial(VideoPlayState::isPlaying) {
-                dataBind.ivPause.visibleOrGone(!it)
             }
         }
-
         viewModel.queryVideoUrl(recommendVideoModel.bvid, recommendVideoModel.cid)
         viewModel.queryVideoDetail(recommendVideoModel.bvid)
     }
 
     override fun onResume() {
         super.onResume()
-        player.startVideo()
+        player.play()
     }
 
     override fun onPause() {
         super.onPause()
-        player.pauseVideo()
+        player.pause()
     }
 
     override fun onDestroyView() {

@@ -2,9 +2,9 @@ package com.benyq.tikbili.ui.video
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.benyq.tikbili.bilibili.BiliRemoteRepository
 import com.benyq.tikbili.ui.base.BaseViewModel
 import com.benyq.tikbili.ui.base.mvi.extension.containers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -40,9 +40,9 @@ class VideoContainerViewModel(private val savedStateHandle: SavedStateHandle) : 
                 }
             }
             .onEach {
-                homePageContainer.updateState {
-                    copy(data = it.item)
-                }
+                sendEvent(VideoContainerEvent.VideoModelEvent(it.item))
+            }.catch {
+
             }
             .launchIn(viewModelScope)
     }
