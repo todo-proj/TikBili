@@ -1,23 +1,17 @@
 package com.benyq.tikbili.ui.video
 
 import android.content.pm.ActivityInfo
-import android.graphics.Matrix
+import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
-import android.util.Size
 import android.view.View
-import android.view.View.OnLayoutChangeListener
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.fragment.app.viewModels
 import com.benyq.tikbili.R
 import com.benyq.tikbili.bilibili.model.RecommendVideoModel
 import com.benyq.tikbili.databinding.FragmentVideoPlayBinding
 import com.benyq.tikbili.ext.fullScreen
-import com.benyq.tikbili.ext.ifFalse
-import com.benyq.tikbili.ext.ifTrue
+import com.benyq.tikbili.ext.gone
+import com.benyq.tikbili.ext.visible
 import com.benyq.tikbili.ext.visibleOrGone
-import com.benyq.tikbili.player.ExoVideoPlayer
 import com.benyq.tikbili.player.MediaCacheFactory
 import com.benyq.tikbili.ui.LifeCycleLogObserver
 import com.benyq.tikbili.ui.base.BaseFragment
@@ -27,9 +21,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
-import kotlin.math.log
-import kotlin.math.min
+import com.google.android.exoplayer2.video.VideoSize
 
 /**
  *
@@ -61,26 +53,42 @@ class FragmentVideoPlay :
         recommendVideoModel = requireArguments().getParcelable(EXTRA_VIDEO)!!
 
         player = SimpleExoPlayer.Builder(requireContext()).build()
+        player.addListener(object : Player.Listener {
+            override fun onVideoSizeChanged(videoSize: VideoSize) {
+            }
+
+            override fun onRenderedFirstFrame() {
+            }
+        })
         player.repeatMode = Player.REPEAT_MODE_ALL
         player.playWhenReady = false
         dataBind.playerView.player = player
+        dataBind.playerView.controllerAutoShow = false
+        dataBind.playerView.setControllerVisibilityListener {
+            viewModel.postIntent(VideoPlayIntent.ControllerVisibilityIntent(it == View.VISIBLE))
+        }
         dataBind.tvLike.setOnClickListener {
             viewModel.postIntent(VideoPlayIntent.LikeVideoIntent(recommendVideoModel.bvid))
         }
         dataBind.ivFullscreen.setOnClickListener {
-            viewModel.postIntent(VideoPlayIntent.FillScreenPlayIntent)
+            viewModel.postIntent(VideoPlayIntent.FullScreenPlayIntent(true))
         }
+        dataBind.ivFullscreenExit.setOnClickListener {
+            viewModel.postIntent(VideoPlayIntent.FullScreenPlayIntent(false))
+        }
+
         viewModel.container.uiStateFlow.collectState(viewLifecycleOwner) {
-            collectPartial(VideoPlayState::fullScreen) {
-                it.ifTrue {
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            collectPartial(
+                VideoPlayState::fullScreen,
+                VideoPlayState::controllerVisible
+            ) { fullScreen, visible ->
+                if (fullScreen) {
+                    dataBind.llRightController.gone()
+                    dataBind.flHeader.visibleOrGone(visible)
+                } else {
+                    dataBind.llRightController.visible()
+                    dataBind.flHeader.gone()
                 }
-                it.ifFalse {
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                }
-                fullScreen(it)
             }
 
             collectPartial(VideoPlayState::videoRotateMode) {
@@ -94,25 +102,42 @@ class FragmentVideoPlay :
                 dataBind.tvStar.text = it.favorite
                 dataBind.tvReply.text = it.reply
             }
+            collectPartial(VideoPlayState::title) {
+                dataBind.tvTitle.text = it
+            }
         }
         viewModel.container.singleEventFlow.collectSingleEvent(viewLifecycleOwner) { event ->
-            when(event) {
+            when (event) {
                 is VideoPlayEvent.VideoPlayUrlEvent -> {
                     if (event.videoUrl.isNotEmpty()) {
                         val mediaItem = MediaItem.Builder()
                             .setUri(event.videoUrl)
                             .build()
                         val mediaSource: ProgressiveMediaSource =
-                            ProgressiveMediaSource.Factory(MediaCacheFactory.getCacheFactory(requireContext()))
-                                .createMediaSource(mediaItem)
+                            ProgressiveMediaSource.Factory(
+                                MediaCacheFactory.getCacheFactory(
+                                    requireContext()
+                                )
+                            ).createMediaSource(mediaItem)
                         player.setMediaSource(mediaSource)
                         player.prepare()
                     }
+                }
+
+                is VideoPlayEvent.FullScreenPlayEvent -> {
+                    val fullScreen = event.fullScreen
+                    requireActivity().requestedOrientation =
+                        if (fullScreen) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    fullScreen(fullScreen)
                 }
             }
         }
         viewModel.queryVideoUrl(recommendVideoModel.bvid, recommendVideoModel.cid)
         viewModel.queryVideoDetail(recommendVideoModel.bvid)
+
+        //初始化一些信息
+        viewModel.postIntent(VideoPlayIntent.FullScreenPlayIntent(requireActivity().requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE))
     }
 
     override fun onResume() {
@@ -128,5 +153,10 @@ class FragmentVideoPlay :
     override fun onDestroyView() {
         super.onDestroyView()
         player.release()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        viewModel.postIntent(VideoPlayIntent.FullScreenPlayIntent(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE))
     }
 }

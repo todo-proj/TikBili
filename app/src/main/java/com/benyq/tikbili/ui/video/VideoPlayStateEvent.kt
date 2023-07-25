@@ -1,7 +1,5 @@
 package com.benyq.tikbili.ui.video
 
-import android.graphics.Matrix
-import android.util.Size
 import com.benyq.tikbili.bilibili.model.VideoDetailModel
 import com.benyq.tikbili.ui.base.mvi.UiEvent
 import com.benyq.tikbili.ui.base.mvi.UiState
@@ -15,8 +13,9 @@ import com.benyq.tikbili.ui.base.mvi.UiState
 
 data class VideoPlayState(
     val videoRotateMode: VideoRotateMode = VideoRotateMode.PORTRAIT,
-    //是否全屏播放
     val fullScreen: Boolean = false,
+    val renderFirstFrame: Boolean = false,
+    val controllerVisible: Boolean = false,
     val title: String = "",
     val stat: Stat = Stat(),
     val relatedVideos: List<VideoDetailModel.UgcSeason.Section.Episode> = emptyList()
@@ -39,10 +38,13 @@ data class VideoPlayState(
 
 
 sealed class VideoPlayEvent: UiEvent {
-    data class VideoPlayUrlEvent(val videoUrl: String = ""): VideoPlayEvent()
+    data class VideoPlayUrlEvent(val videoUrl: String): VideoPlayEvent()
+    data class FullScreenPlayEvent(val fullScreen: Boolean): VideoPlayEvent()
 }
 
 sealed class VideoPlayIntent {
-    object FillScreenPlayIntent : VideoPlayIntent()
+    data class FullScreenPlayIntent(val fullScreen: Boolean) : VideoPlayIntent()
     data class LikeVideoIntent(val bvid: String): VideoPlayIntent()
+    object RenderFirstFrameIntent: VideoPlayIntent()
+    data class ControllerVisibilityIntent(val visible: Boolean): VideoPlayIntent()
 }

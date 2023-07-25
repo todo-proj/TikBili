@@ -1,22 +1,18 @@
 package com.benyq.tikbili.ui.video
 
 import android.graphics.Matrix
-import android.graphics.RectF
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.benyq.tikbili.player.ExoVideoPlayer
 import com.benyq.tikbili.ui.base.BaseViewModel
 import com.benyq.tikbili.ui.base.mvi.extension.containers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import java.net.URLDecoder
-import kotlin.math.min
 
 
 /**
@@ -29,10 +25,6 @@ class VideoPlayViewModel : BaseViewModel() {
 
     val container by containers<VideoPlayState, VideoPlayEvent>(VideoPlayState())
     private var portraitMatrix = Matrix()
-
-    fun sendEvent(event: VideoPlayEvent) {
-        container.sendEvent(event)
-    }
 
     fun queryVideoDetail(bvid: String) {
         request {
@@ -50,7 +42,7 @@ class VideoPlayViewModel : BaseViewModel() {
                 }
                 val videoRotateMode =
                     if (it.dimension.width > it.dimension.height) VideoPlayState.VideoRotateMode.LANDSCAPE else VideoPlayState.VideoRotateMode.PORTRAIT
-                copy(stat = stat, videoRotateMode = videoRotateMode)
+                copy(stat = stat, videoRotateMode = videoRotateMode, title = it.title)
             }
         }.catch {  }.onCompletion {
 
@@ -68,7 +60,7 @@ class VideoPlayViewModel : BaseViewModel() {
             .flowOn(Dispatchers.IO)
             .onEach {
                 it.getOrNull()?.let { url ->
-                    sendEvent(VideoPlayEvent.VideoPlayUrlEvent(url))
+                    container.sendEvent(VideoPlayEvent.VideoPlayUrlEvent(url))
                 }
             }.catch {  }.onCompletion {
                 Log.e("benyq", "queryVideoUrl onCompletion error: $it")
@@ -77,17 +69,19 @@ class VideoPlayViewModel : BaseViewModel() {
 
     fun postIntent(intent: VideoPlayIntent) {
         when (intent) {
-            is VideoPlayIntent.FillScreenPlayIntent -> changeFullScreen()
+            is VideoPlayIntent.FullScreenPlayIntent -> {
+                container.sendEvent(VideoPlayEvent.FullScreenPlayEvent(intent.fullScreen))
+                container.updateState {
+                    copy(fullScreen = intent.fullScreen)
+                }
+            }
             is VideoPlayIntent.LikeVideoIntent -> {
 
             }
-        }
-    }
-
-    private fun changeFullScreen() {
-        container.updateState {
-            val newFullScreen = !fullScreen
-            copy(fullScreen = newFullScreen)
+            is VideoPlayIntent.RenderFirstFrameIntent -> container.updateState { copy(renderFirstFrame = true) }
+            is VideoPlayIntent.ControllerVisibilityIntent -> {
+                container.updateState { copy(controllerVisible = intent.visible) }
+            }
         }
     }
 
