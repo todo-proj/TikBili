@@ -18,29 +18,25 @@ import kotlinx.coroutines.flow.onStart
  */
 class VideoContainerViewModel(private val savedStateHandle: SavedStateHandle) : BaseViewModel() {
 
-    val homePageContainer by containers<VideoContainerState, VideoContainerEvent>(
+    val container by containers<VideoContainerState, VideoContainerEvent>(
         VideoContainerState(false)
     )
 
-    fun sendEvent(event: VideoContainerEvent) {
-        homePageContainer.sendEvent(event)
-    }
-
-    fun loadHomeVideo() {
+    fun loadHomeVideo(loadMore: Boolean = false) {
         request {
-            repository.getRecommend()
+            repository.getRecommend(5)
         }.onStart {
-                homePageContainer.updateState {
-                    copy(loading = true)
+            container.updateState {
+                    copy(loading = !loadMore)
                 }
             }
             .onCompletion {
-                homePageContainer.updateState {
+                container.updateState {
                     copy(loading = false)
                 }
             }
             .onEach {
-                sendEvent(VideoContainerEvent.VideoModelEvent(it.item))
+                container.sendEvent(VideoContainerEvent.VideoModelEvent(it.item, loadMore))
             }.catch {
 
             }

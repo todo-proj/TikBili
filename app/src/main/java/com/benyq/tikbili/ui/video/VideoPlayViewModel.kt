@@ -67,6 +67,14 @@ class VideoPlayViewModel : BaseViewModel() {
             }.launchIn(viewModelScope)
     }
 
+    fun queryVideoReply(oid: String) {
+        request { repository.videoReply(oid, 1) }
+            .flowOn(Dispatchers.IO)
+            .onEach {
+                container.sendEvent(VideoPlayEvent.VideoCommentsEvent(it.replies))
+            }.catch { Log.e("benyq", "queryVideoReply: $oid, ${it.message}") }.launchIn(viewModelScope)
+    }
+
     fun postIntent(intent: VideoPlayIntent) {
         when (intent) {
             is VideoPlayIntent.FullScreenPlayIntent -> {

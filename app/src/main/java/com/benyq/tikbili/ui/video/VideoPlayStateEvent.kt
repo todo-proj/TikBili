@@ -1,6 +1,7 @@
 package com.benyq.tikbili.ui.video
 
 import com.benyq.tikbili.bilibili.model.VideoDetailModel
+import com.benyq.tikbili.bilibili.model.VideoReplyModel
 import com.benyq.tikbili.ui.base.mvi.UiEvent
 import com.benyq.tikbili.ui.base.mvi.UiState
 
@@ -40,6 +41,7 @@ data class VideoPlayState(
 sealed class VideoPlayEvent: UiEvent {
     data class VideoPlayUrlEvent(val videoUrl: String): VideoPlayEvent()
     data class FullScreenPlayEvent(val fullScreen: Boolean): VideoPlayEvent()
+    data class VideoCommentsEvent(val comments: List<VideoReplyModel.Reply>): VideoPlayEvent()
 }
 
 sealed class VideoPlayIntent {

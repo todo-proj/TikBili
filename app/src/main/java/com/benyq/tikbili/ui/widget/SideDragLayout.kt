@@ -68,7 +68,7 @@ class SideDragLayout @JvmOverloads constructor(
             //做内容布局移动的时候，详情布局跟着同样的移动
             if (changedView == centerChild) {
                 rightChild.layout(rightChild.getLeft() + dx, rightChild.getTop() + dy,
-                    rightChild.getRight() + dx, rightChild.getBottom() + dy);
+                    rightChild.getRight() + dx, rightChild.getBottom() + dy)
             } else if (changedView == rightChild) {
                 //当详情布局移动的时候，内容布局做同样的移动
                 centerChild.layout(centerChild.getLeft() + dx, centerChild.getTop() + dy,
@@ -83,9 +83,9 @@ class SideDragLayout @JvmOverloads constructor(
             //松开之后，只要移动超过一半就可以打开或者关闭
             val detailWidth = rightChild.measuredWidth
             if (centerChild.left < -detailWidth / 2) {
-                open();
+                open()
             } else {
-                close();
+                close()
             }
         }
     }

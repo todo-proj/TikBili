@@ -28,7 +28,7 @@ class SplashViewModel: BaseViewModel() {
 
     fun checkLogin() {
         request {
-            withTimeout(3000) {
+            withTimeout(2500) {
                 repository.accountInfo()
             }
         }.onEach {

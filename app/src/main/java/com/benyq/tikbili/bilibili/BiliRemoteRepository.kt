@@ -13,7 +13,7 @@ class BiliRemoteRepository {
 
     private val api = RetrofitManager.bilibiliApi
 
-    suspend fun getRecommend() = api.getRecommend()
+    suspend fun getRecommend(pageSize: Int = 10) = api.getRecommend(pageSize = pageSize)
 
     suspend fun videoInfo(bvid: String) = api.videoInfo(bvid)
 
@@ -21,4 +21,5 @@ class BiliRemoteRepository {
 
     //这个接口可以用来检测是否登录
     suspend fun accountInfo() = api.accountInfo()
+    suspend fun videoReply(oid: String, pn: Int) = api.videoReply(oid, pn)
 }

@@ -5,6 +5,7 @@ import com.benyq.tikbili.bilibili.model.BiliBiliResponse
 import com.benyq.tikbili.bilibili.model.RecommendVideoData
 import com.benyq.tikbili.bilibili.model.RecommendVideoModel
 import com.benyq.tikbili.bilibili.model.VideoDetailModel
+import com.benyq.tikbili.bilibili.model.VideoReplyModel
 import com.benyq.tikbili.bilibili.model.VideoUrlModel
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -22,7 +23,7 @@ interface BilibiliCollectApi {
     }
 
     @GET("x/web-interface/index/top/rcmd")
-    suspend fun getRecommend(@Query("fresh_type") freshType: Int = 3, @Query("ps") pageSize: Int = 10): BiliBiliResponse<RecommendVideoData>
+    suspend fun getRecommend(@Query("fresh_type") freshType: Int = 3, @Query("ps") pageSize: Int): BiliBiliResponse<RecommendVideoData>
 
     @GET("x/web-interface/view")
     suspend fun videoInfo(@Query("bvid") bvid: String): BiliBiliResponse<VideoDetailModel>
@@ -33,4 +34,6 @@ interface BilibiliCollectApi {
     @GET("x/member/web/account")
     suspend fun accountInfo(): BiliBiliResponse<AccountModel>
 
+    @GET("x/v2/reply")
+    suspend fun videoReply(@Query("oid") oid: String, @Query("pn") pn: Int, @Query("type") type: Int = 1, @Query("mode") mode: Int = 3, @Query("ps") ps: Int = 20): BiliBiliResponse<VideoReplyModel>
 }

@@ -12,6 +12,7 @@ import com.benyq.tikbili.ext.systemBarColor
 import com.benyq.tikbili.ui.base.BaseActivity
 import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
+import com.benyq.tikbili.ui.test.TestFragment
 import com.benyq.tikbili.ui.video.FragmentVideoContainer
 
 

@@ -6,14 +6,19 @@ import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.benyq.tikbili.R
 import com.benyq.tikbili.databinding.FragmentVideoContainerBinding
+import com.benyq.tikbili.ext.gone
 import com.benyq.tikbili.ext.hideLoading
+import com.benyq.tikbili.ext.isSlideToBottom
 import com.benyq.tikbili.ext.overScrollNever
 import com.benyq.tikbili.ext.showLoading
+import com.benyq.tikbili.ext.visible
 import com.benyq.tikbili.ui.base.BaseFragment
 import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
+import com.benyq.tikbili.ui.widget.RefreshView
 
 /**
  *
@@ -31,22 +36,39 @@ class FragmentVideoContainer: BaseFragment<FragmentVideoContainerBinding>(R.layo
         dataBind.vpVideo.adapter = fragmentAdapter
         dataBind.vpVideo.orientation = ViewPager2.ORIENTATION_VERTICAL
         dataBind.vpVideo.overScrollNever()
-        viewModel.homePageContainer.singleEventFlow.collectSingleEvent(viewLifecycleOwner) {
+        dataBind.vpVideo.registerOnPageChangeCallback(object: OnPageChangeCallback() {
+        })
+        dataBind.refreshView.setOnSlideBottomListener {
+            dataBind.vpVideo.isSlideToBottom()
+        }
+        dataBind.refreshView.setOnLoadingListener {
+            //刷新
+            viewModel.loadHomeVideo(true)
+            Log.d("benyq", "FragmentVideoContainer: loadHomeVideo")
+        }
+
+        viewModel.container.singleEventFlow.collectSingleEvent(viewLifecycleOwner) {
             when(it) {
                 is VideoContainerEvent.ToastEvent -> {
                     Toast.makeText(requireActivity(), it.message, Toast.LENGTH_SHORT).show()
                 }
                 is VideoContainerEvent.VideoModelEvent -> {
-                    fragmentAdapter.updateData(it.data)
+                    if (it.loadMore) {
+                        fragmentAdapter.addAll(it.data)
+                        dataBind.refreshView.finishLoading()
+                    }else {
+                        fragmentAdapter.submit(it.data)
+                    }
+                    Log.d("benyq", "FragmentVideoContainer: VideoModelEvent: ${fragmentAdapter.itemCount}")
                 }
             }
         }
-        viewModel.homePageContainer.uiStateFlow.collectState(viewLifecycleOwner) {
+        viewModel.container.uiStateFlow.collectState(viewLifecycleOwner) {
             collectPartial(VideoContainerState::loading) {
                 if (it) {
-                    requireActivity().showLoading()
+                    dataBind.flLoading.visible()
                 }else {
-                    requireActivity().hideLoading()
+                    dataBind.flLoading.gone()
                 }
             }
         }

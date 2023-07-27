@@ -20,7 +20,7 @@ data class RecommendVideoModel(
     @SerializedName("goto")
     val goto: String,
     @SerializedName("id")
-    val id: Int,
+    val id: String,
     @SerializedName("is_followed")
     val isFollowed: Int,
     @SerializedName("is_stock")

@@ -12,8 +12,13 @@ class VideoStateAdapter(fragment: Fragment): FragmentStateAdapter(fragment) {
         return FragmentVideoPlay.newInstance(dataList[position])
     }
 
-    fun updateData(data: List<RecommendVideoModel>) {
+    fun submit(data: List<RecommendVideoModel>) {
         dataList.clear()
+        dataList.addAll(data)
+        notifyDataSetChanged()
+    }
+
+    fun addAll(data: List<RecommendVideoModel>) {
         dataList.addAll(data)
         notifyDataSetChanged()
     }

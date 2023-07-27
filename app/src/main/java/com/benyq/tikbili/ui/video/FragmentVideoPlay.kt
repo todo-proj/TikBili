@@ -3,8 +3,10 @@ package com.benyq.tikbili.ui.video
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.benyq.tikbili.R
 import com.benyq.tikbili.bilibili.model.RecommendVideoModel
 import com.benyq.tikbili.databinding.FragmentVideoPlayBinding
@@ -48,10 +50,13 @@ class FragmentVideoPlay :
 
     private lateinit var recommendVideoModel: RecommendVideoModel
 
+    private var commentsAdapter = CommentsAdapter()
+
     override fun onFragmentCreated(savedInstanceState: Bundle?) {
         viewLifecycleOwner.lifecycle.addObserver(LifeCycleLogObserver())
         recommendVideoModel = requireArguments().getParcelable(EXTRA_VIDEO)!!
 
+        initComments()
         player = SimpleExoPlayer.Builder(requireContext()).build()
         player.addListener(object : Player.Listener {
             override fun onVideoSizeChanged(videoSize: VideoSize) {
@@ -131,10 +136,14 @@ class FragmentVideoPlay :
                         else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                     fullScreen(fullScreen)
                 }
+                is VideoPlayEvent.VideoCommentsEvent -> {
+                    commentsAdapter.submitList(event.comments)
+                }
             }
         }
         viewModel.queryVideoUrl(recommendVideoModel.bvid, recommendVideoModel.cid)
         viewModel.queryVideoDetail(recommendVideoModel.bvid)
+        viewModel.queryVideoReply(recommendVideoModel.id)
 
         //初始化一些信息
         viewModel.postIntent(VideoPlayIntent.FullScreenPlayIntent(requireActivity().requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE))
@@ -158,5 +167,10 @@ class FragmentVideoPlay :
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         viewModel.postIntent(VideoPlayIntent.FullScreenPlayIntent(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE))
+    }
+
+    private fun initComments() {
+        dataBind.rvComments.layoutManager = LinearLayoutManager(requireActivity())
+        dataBind.rvComments.adapter = commentsAdapter
     }
 }

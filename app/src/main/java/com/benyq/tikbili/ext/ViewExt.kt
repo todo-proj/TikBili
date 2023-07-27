@@ -66,6 +66,14 @@ fun ViewPager2.overScrollNever() {
     (child as? RecyclerView)?.overScrollMode = View.OVER_SCROLL_NEVER
 }
 
+fun ViewPager2.isSlideToBottom(): Boolean {
+    return (getChildAt(0) as? RecyclerView)?.isSlideToBottom() ?: false
+}
+
+fun RecyclerView.isSlideToBottom(): Boolean {
+    return computeVerticalScrollExtent() + computeVerticalScrollOffset() >= computeVerticalScrollRange()
+}
+
 /**
  * 可以在一个屏幕上显示多项item
  */
