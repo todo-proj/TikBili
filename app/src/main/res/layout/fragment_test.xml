@@ -7,14 +7,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.benyq.tikbili.ui.widget.RefreshView
+        <com.benyq.tikbili.ui.widget.LoadMoreNestedFrameLayout
             android:id="@+id/refresh_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/purple_500">
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="70dp">
+                android:layout_height="70dp"
+                android:layout_gravity="bottom">
 
                 <com.benyq.tikbili.ui.widget.TiktokVideoLoadingView
                     android:id="@+id/loading"
@@ -24,23 +26,12 @@
 
             </FrameLayout>
 
-            <ImageView
-                android:id="@+id/player_view"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_comments"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_thumb_up"
-                android:background="@color/purple_500"/>
+                android:layout_height="match_parent"/>
 
-        </com.benyq.tikbili.ui.widget.RefreshView>
-
-        <com.benyq.tikbili.ui.widget.TiktokVideoLoadingView
-            android:layout_gravity="center"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="60dp"
-            android:layout_height="60dp"/>
+        </com.benyq.tikbili.ui.widget.LoadMoreNestedFrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

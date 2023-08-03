@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
 import kotlin.math.abs
@@ -15,9 +14,9 @@ import kotlin.math.abs
  *
  * @author benyq
  * @date 7/25/2023
- * 下拉更多
+ * 下拉更多, 用基础的事件分发和ViewDragHelper实现
  */
-class RefreshView @JvmOverloads constructor(
+class LoadMoreLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,

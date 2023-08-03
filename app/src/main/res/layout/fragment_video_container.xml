@@ -4,14 +4,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.benyq.tikbili.ui.widget.RefreshView
+        <com.benyq.tikbili.ui.widget.LoadMoreNestedFrameLayout
             android:id="@+id/refresh_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="70dp">
+                android:layout_height="70dp"
+                android:layout_gravity="bottom">
 
                 <com.benyq.tikbili.ui.widget.TiktokVideoLoadingView
                     android:id="@+id/loading"
@@ -26,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-        </com.benyq.tikbili.ui.widget.RefreshView>
+        </com.benyq.tikbili.ui.widget.LoadMoreNestedFrameLayout>
 
         <FrameLayout
             android:id="@+id/fl_loading"
