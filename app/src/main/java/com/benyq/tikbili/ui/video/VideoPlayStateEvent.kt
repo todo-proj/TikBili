@@ -19,6 +19,9 @@ data class VideoPlayState(
     val controllerVisible: Boolean = false,
     val title: String = "",
     val stat: Stat = Stat(),
+    val timeBar: TimeBar = TimeBar(),
+    val isLoading: Boolean = true,
+    val isPlaying: Boolean = false,
     val relatedVideos: List<VideoDetailModel.UgcSeason.Section.Episode> = emptyList()
 ): UiState {
     enum class VideoRotateMode {
@@ -35,11 +38,13 @@ data class VideoPlayState(
         //分享
         val share: String = "",
     )
+
+    data class TimeBar(val duration: Long = 0, val position: Long = 0, val bufferedPosition: Long = 0)
+
 }
 
 
 sealed class VideoPlayEvent: UiEvent {
-    data class VideoPlayUrlEvent(val videoUrl: String): VideoPlayEvent()
     data class FullScreenPlayEvent(val fullScreen: Boolean): VideoPlayEvent()
     data class VideoCommentsEvent(val comments: List<VideoReplyModel.Reply>): VideoPlayEvent()
 }

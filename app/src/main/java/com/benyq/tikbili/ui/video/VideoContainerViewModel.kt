@@ -1,5 +1,6 @@
 package com.benyq.tikbili.ui.video
 
+import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.benyq.tikbili.ui.base.BaseViewModel
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.onStart
  * @date 7/14/2023
  *
  */
-class VideoContainerViewModel(private val savedStateHandle: SavedStateHandle) : BaseViewModel() {
+class VideoContainerViewModel(application: Application, private val savedStateHandle: SavedStateHandle) : BaseViewModel(application) {
 
     val container by containers<VideoContainerState, VideoContainerEvent>(
         VideoContainerState(false)

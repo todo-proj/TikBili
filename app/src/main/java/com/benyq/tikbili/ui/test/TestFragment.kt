@@ -4,15 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.benyq.tikbili.R
 import com.benyq.tikbili.databinding.FragmentTestBinding
 import com.benyq.tikbili.ui.base.BaseFragment
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.QuickViewHolder
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  *

@@ -1,5 +1,6 @@
 package com.benyq.tikbili.ui.splash
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.benyq.tikbili.api.ApiThrowable
@@ -22,7 +23,7 @@ import java.lang.IllegalStateException
  * @date 7/17/2023
  *
  */
-class SplashViewModel: BaseViewModel() {
+class SplashViewModel(context: Application): BaseViewModel(context) {
 
     val container by containers<SplashState, SplashEvent>(SplashState(0))
 

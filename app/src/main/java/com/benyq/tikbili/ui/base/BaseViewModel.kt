@@ -1,5 +1,7 @@
 package com.benyq.tikbili.ui.base
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import com.benyq.tikbili.api.ApiThrowable
 import com.benyq.tikbili.bilibili.BiliRemoteRepository
@@ -14,7 +16,7 @@ import kotlinx.coroutines.flow.flowOn
  * @date 7/14/2023
  *
  */
-open class BaseViewModel : ViewModel() {
+open class BaseViewModel(application: Application) : AndroidViewModel(application) {
 
     protected val repository = BiliRemoteRepository()
 

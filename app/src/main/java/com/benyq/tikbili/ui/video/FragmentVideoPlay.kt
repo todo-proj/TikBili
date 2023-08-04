@@ -14,16 +14,11 @@ import com.benyq.tikbili.ext.fullScreen
 import com.benyq.tikbili.ext.gone
 import com.benyq.tikbili.ext.visible
 import com.benyq.tikbili.ext.visibleOrGone
-import com.benyq.tikbili.player.MediaCacheFactory
 import com.benyq.tikbili.ui.LifeCycleLogObserver
 import com.benyq.tikbili.ui.base.BaseFragment
 import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.video.VideoSize
+import com.google.android.exoplayer2.ui.TimeBar
 
 /**
  *
@@ -46,29 +41,39 @@ class FragmentVideoPlay :
     }
 
     private val viewModel by viewModels<VideoPlayViewModel>()
-    private lateinit var player: SimpleExoPlayer
 
     private lateinit var recommendVideoModel: RecommendVideoModel
 
     private var commentsAdapter = CommentsAdapter()
 
     override fun onFragmentCreated(savedInstanceState: Bundle?) {
+        Log.d("benyq", "onFragmentCreated-viewModel: $viewModel")
         viewLifecycleOwner.lifecycle.addObserver(LifeCycleLogObserver())
         recommendVideoModel = requireArguments().getParcelable(EXTRA_VIDEO)!!
-
         initComments()
-        player = SimpleExoPlayer.Builder(requireContext()).build()
-        player.addListener(object : Player.Listener {
-            override fun onVideoSizeChanged(videoSize: VideoSize) {
+
+        dataBind.playerView.player = viewModel.player
+        dataBind.playerView.controllerAutoShow = false
+        dataBind.timeBar.addListener(object: TimeBar.OnScrubListener {
+            override fun onScrubStart(timeBar: TimeBar, position: Long) {
             }
 
-            override fun onRenderedFirstFrame() {
+            override fun onScrubMove(timeBar: TimeBar, position: Long) {
+            }
+
+            override fun onScrubStop(timeBar: TimeBar, position: Long, canceled: Boolean) {
+                viewModel.player.seekTo(position)
             }
         })
-        player.repeatMode = Player.REPEAT_MODE_ALL
-        player.playWhenReady = false
-        dataBind.playerView.player = player
-        dataBind.playerView.controllerAutoShow = false
+        dataBind.playerView.setOnClickListener {
+            if (!dataBind.playerView.useController) {
+                viewModel.player.playWhenReady = !viewModel.player.playWhenReady
+            }
+        }
+        dataBind.playerView.controllerView?.setProgressUpdateListener { position, bufferedPosition ->
+            dataBind.timeBar.setPosition(position)
+            dataBind.timeBar.setBufferedPosition(bufferedPosition)
+        }
         dataBind.playerView.setControllerVisibilityListener {
             viewModel.postIntent(VideoPlayIntent.ControllerVisibilityIntent(it == View.VISIBLE))
         }
@@ -94,8 +99,14 @@ class FragmentVideoPlay :
                     dataBind.llRightController.visible()
                     dataBind.flHeader.gone()
                 }
+                dataBind.playerView.useController = fullScreen
+                dataBind.timeBar.visibleOrGone(!fullScreen)
             }
-
+            collectPartial(VideoPlayState::timeBar) {
+                dataBind.timeBar.setDuration(it.duration)
+                dataBind.timeBar.setPosition(it.position)
+                dataBind.timeBar.setBufferedPosition(it.bufferedPosition)
+            }
             collectPartial(VideoPlayState::videoRotateMode) {
                 //显示全屏播放按钮
                 dataBind.ivFullscreen.visibleOrGone(it == VideoPlayState.VideoRotateMode.LANDSCAPE)
@@ -110,25 +121,12 @@ class FragmentVideoPlay :
             collectPartial(VideoPlayState::title) {
                 dataBind.tvTitle.text = it
             }
+            collectPartial(VideoPlayState::isPlaying) {
+                dataBind.ivPlayState.visibleOrGone(!it)
+            }
         }
         viewModel.container.singleEventFlow.collectSingleEvent(viewLifecycleOwner) { event ->
             when (event) {
-                is VideoPlayEvent.VideoPlayUrlEvent -> {
-                    if (event.videoUrl.isNotEmpty()) {
-                        val mediaItem = MediaItem.Builder()
-                            .setUri(event.videoUrl)
-                            .build()
-                        val mediaSource: ProgressiveMediaSource =
-                            ProgressiveMediaSource.Factory(
-                                MediaCacheFactory.getCacheFactory(
-                                    requireContext()
-                                )
-                            ).createMediaSource(mediaItem)
-                        player.setMediaSource(mediaSource)
-                        player.prepare()
-                    }
-                }
-
                 is VideoPlayEvent.FullScreenPlayEvent -> {
                     val fullScreen = event.fullScreen
                     requireActivity().requestedOrientation =
@@ -151,17 +149,17 @@ class FragmentVideoPlay :
 
     override fun onResume() {
         super.onResume()
-        player.play()
+        viewModel.player.play()
     }
 
     override fun onPause() {
         super.onPause()
-        player.pause()
+        viewModel.player.pause()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        player.release()
+        viewModel.player.release()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

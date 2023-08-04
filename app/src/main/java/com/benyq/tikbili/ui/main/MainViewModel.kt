@@ -1,5 +1,6 @@
 package com.benyq.tikbili.ui.main
 
+import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.benyq.tikbili.api.ApiThrowable
@@ -22,7 +23,7 @@ import kotlinx.coroutines.flow.onEach
 
 
 
-class MainViewModel(private val savedStateHandle: SavedStateHandle) : BaseViewModel() {
+class MainViewModel(private val application: Application, private val savedStateHandle: SavedStateHandle) : BaseViewModel(application) {
 
     val mainContainer by containers<MainState, MainPageEvent>(MainState("benyq", 26))
 

@@ -19,8 +19,9 @@ class VideoStateAdapter(fragment: Fragment): FragmentStateAdapter(fragment) {
     }
 
     fun addAll(data: List<RecommendVideoModel>) {
+        val oldSize = dataList.size
         dataList.addAll(data)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(oldSize, data.size)
     }
 
 }

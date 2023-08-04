@@ -23,7 +23,6 @@ class TikBiliApp: Application() {
     override fun onCreate() {
         super.onCreate()
         appCtx = this
-
         MMKV.initialize(this)
         StartLogHelper.getApplicationTime()
     }
