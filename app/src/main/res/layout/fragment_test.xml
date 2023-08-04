@@ -7,15 +7,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.benyq.tikbili.ui.widget.LoadMoreNestedFrameLayout
+        <com.benyq.tikbili.ui.widget.CommentNestedLayout
             android:id="@+id/refresh_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/purple_500">
+            android:orientation="vertical">
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="match_parent"
+                android:background="@color/purple_500"
                 android:layout_gravity="bottom">
 
                 <com.benyq.tikbili.ui.widget.TiktokVideoLoadingView
@@ -31,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-        </com.benyq.tikbili.ui.widget.LoadMoreNestedFrameLayout>
+        </com.benyq.tikbili.ui.widget.CommentNestedLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

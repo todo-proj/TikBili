@@ -34,5 +34,9 @@ class TestFragment: BaseFragment<FragmentTestBinding>(R.layout.fragment_test) {
         }
         dataBind.rvComments.adapter = adapter
         adapter.submitList((1..50).toList().map { "num: $it" })
+
+        dataBind.refreshView.setOnClickListener {
+            dataBind.refreshView.open()
+        }
     }
 }
