@@ -35,8 +35,13 @@ class TestFragment: BaseFragment<FragmentTestBinding>(R.layout.fragment_test) {
         dataBind.rvComments.adapter = adapter
         adapter.submitList((1..50).toList().map { "num: $it" })
 
-        dataBind.refreshView.setOnClickListener {
+        dataBind.ivReply.setOnClickListener {
             dataBind.refreshView.open()
+        }
+        dataBind.flVideo.setOnClickListener {
+            if (dataBind.refreshView.canCloseComment()) {
+                dataBind.refreshView.close()
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package com.benyq.tikbili.ui.video
 
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -18,6 +19,7 @@ import com.benyq.tikbili.ui.LifeCycleLogObserver
 import com.benyq.tikbili.ui.base.BaseFragment
 import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
+import com.benyq.tikbili.ui.widget.CommentNestedLayout
 import com.google.android.exoplayer2.ui.TimeBar
 
 /**
@@ -66,6 +68,10 @@ class FragmentVideoPlay :
             }
         })
         dataBind.playerView.setOnClickListener {
+            if (dataBind.commentLayout.canCloseComment()) {
+                dataBind.commentLayout.close()
+                return@setOnClickListener
+            }
             if (!dataBind.playerView.useController) {
                 viewModel.player.playWhenReady = !viewModel.player.playWhenReady
             }
@@ -77,6 +83,9 @@ class FragmentVideoPlay :
         dataBind.playerView.setControllerVisibilityListener {
             viewModel.postIntent(VideoPlayIntent.ControllerVisibilityIntent(it == View.VISIBLE))
         }
+        dataBind.tvReply.setOnClickListener {
+            dataBind.commentLayout.open()
+        }
         dataBind.tvLike.setOnClickListener {
             viewModel.postIntent(VideoPlayIntent.LikeVideoIntent(recommendVideoModel.bvid))
         }
@@ -86,7 +95,9 @@ class FragmentVideoPlay :
         dataBind.ivFullscreenExit.setOnClickListener {
             viewModel.postIntent(VideoPlayIntent.FullScreenPlayIntent(false))
         }
-
+        dataBind.commentLayout.setOnStateChangedListener {
+            viewModel.postIntent(VideoPlayIntent.CommentShowIntent(it == CommentNestedLayout.State.STATE_OPEN))
+        }
         viewModel.container.uiStateFlow.collectState(viewLifecycleOwner) {
             collectPartial(
                 VideoPlayState::fullScreen,
@@ -123,6 +134,10 @@ class FragmentVideoPlay :
             }
             collectPartial(VideoPlayState::isPlaying) {
                 dataBind.ivPlayState.visibleOrGone(!it)
+            }
+            collectPartial(VideoPlayState::isCommentShow) {
+                dataBind.llRightController.visibleOrGone(!it)
+                dataBind.timeBar.visibleOrGone(!it)
             }
         }
         viewModel.container.singleEventFlow.collectSingleEvent(viewLifecycleOwner) { event ->

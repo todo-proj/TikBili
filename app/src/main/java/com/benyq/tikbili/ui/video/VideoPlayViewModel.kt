@@ -132,6 +132,9 @@ class VideoPlayViewModel(private val context: Application) : BaseViewModel(conte
             is VideoPlayIntent.ControllerVisibilityIntent -> {
                 container.updateState { copy(controllerVisible = intent.visible) }
             }
+            is VideoPlayIntent.CommentShowIntent -> {
+                container.updateState { copy(isCommentShow = intent.visible) }
+            }
         }
     }
 

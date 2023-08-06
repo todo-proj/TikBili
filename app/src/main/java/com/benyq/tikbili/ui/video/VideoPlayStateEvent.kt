@@ -22,6 +22,7 @@ data class VideoPlayState(
     val timeBar: TimeBar = TimeBar(),
     val isLoading: Boolean = true,
     val isPlaying: Boolean = false,
+    val isCommentShow: Boolean = false,
     val relatedVideos: List<VideoDetailModel.UgcSeason.Section.Episode> = emptyList()
 ): UiState {
     enum class VideoRotateMode {
@@ -54,4 +55,5 @@ sealed class VideoPlayIntent {
     data class LikeVideoIntent(val bvid: String): VideoPlayIntent()
     object RenderFirstFrameIntent: VideoPlayIntent()
     data class ControllerVisibilityIntent(val visible: Boolean): VideoPlayIntent()
+    data class CommentShowIntent(val visible: Boolean): VideoPlayIntent()
 }

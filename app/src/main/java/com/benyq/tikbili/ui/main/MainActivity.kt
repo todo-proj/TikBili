@@ -40,7 +40,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             val showFragment: Fragment? =
                 supportFragmentManager.findFragmentByTag(tag) ?: when (tag) {
                     "Video" -> {
-                        TestFragment().apply {
+                        FragmentVideoContainer().apply {
                             it.add(R.id.fl_container, this, tag)
                         }
                     }

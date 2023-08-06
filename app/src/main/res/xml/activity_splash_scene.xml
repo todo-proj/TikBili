@@ -99,7 +99,7 @@
 
             <KeyAttribute app:motionTarget="@id/iv_tikbili"
                 android:alpha="0.1"
-                app:framePosition="85"/>
+                app:framePosition="80"/>
             <KeyAttribute app:motionTarget="@id/iv_tikbili"
                 android:alpha="0.7"
                 app:framePosition="95"/>

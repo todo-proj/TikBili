@@ -18,17 +18,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.benyq.tikbili.ui.widget.PlayerView
-                android:id="@+id/player_view"
+            <com.benyq.tikbili.ui.widget.CommentNestedLayout
+                android:id="@+id/comment_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:surface_type="texture_view" />
+                android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:visibility="invisible"
-                android:id="@+id/rv_comments"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp" />
+                <com.benyq.tikbili.ui.widget.PlayerView
+                    android:id="@+id/player_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:surface_type="texture_view" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_comments"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </com.benyq.tikbili.ui.widget.CommentNestedLayout>
 
             <LinearLayout
                 android:id="@+id/ll_right_controller"
