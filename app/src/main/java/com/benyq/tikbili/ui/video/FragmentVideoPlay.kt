@@ -132,8 +132,8 @@ class FragmentVideoPlay :
             collectPartial(VideoPlayState::title) {
                 dataBind.tvTitle.text = it
             }
-            collectPartial(VideoPlayState::isPlaying) {
-                dataBind.ivPlayState.visibleOrGone(!it)
+            collectPartial(VideoPlayState::isPlaying, VideoPlayState::isCommentShow) { isPlaying, isCommentShow->
+                dataBind.ivPlayState.visibleOrGone(!isPlaying && !isCommentShow)
             }
             collectPartial(VideoPlayState::isCommentShow) {
                 dataBind.llRightController.visibleOrGone(!it)

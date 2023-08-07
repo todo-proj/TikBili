@@ -80,12 +80,18 @@ class SideDragLayout @JvmOverloads constructor(
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
             Log.d("SideDragLayout", "onViewReleased: $xvel")
             super.onViewReleased(releasedChild, xvel, yvel)
-            //松开之后，只要移动超过一半就可以打开或者关闭
-            val detailWidth = rightChild.measuredWidth
-            if (centerChild.left < -detailWidth / 2) {
+            if (xvel < -5000) {
                 open()
-            } else {
+            }else if (xvel > 5000) {
                 close()
+            }else {
+                //松开之后，只要移动超过一半就可以打开或者关闭
+                val detailWidth = rightChild.measuredWidth
+                if (centerChild.left < -detailWidth / 2) {
+                    open()
+                } else {
+                    close()
+                }
             }
         }
     }

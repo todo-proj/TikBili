@@ -160,6 +160,10 @@ class CommentNestedLayout @JvmOverloads constructor(
 
     }
 
+    override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
+        return true
+    }
+
     override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
         Log.d(TAG, "onNestedPreScroll: target: $target. canScrollVertically: ${bottomChild.canScrollVertically(-1)}")
         if (!bottomChild.canScrollVertically(-1)) {
