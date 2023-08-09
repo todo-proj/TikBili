@@ -112,6 +112,7 @@ class SideDragLayout @JvmOverloads constructor(
 
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        Log.d("SideDragLayout", "onLayout onMeasure")
         measureChildren(widthMeasureSpec, heightMeasureSpec)
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
@@ -127,7 +128,7 @@ class SideDragLayout @JvmOverloads constructor(
             throw IllegalArgumentException("必须存在3个子View")
         }
 
-        Log.d("SideDragLayout", "onLayout")
+        Log.d("SideDragLayout", "onLayout: moveDistanceX $moveDistanceX")
         centerChild.layout(moveDistanceX, 0, centerChild.measuredWidth + moveDistanceX, centerChild.measuredHeight)
         leftChild.layout(-leftChild.measuredWidth, 0, 0, leftChild.measuredHeight)
         rightChild.layout(

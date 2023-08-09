@@ -1,12 +1,14 @@
 package com.benyq.tikbili.ui.test
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.benyq.tikbili.R
 import com.benyq.tikbili.databinding.FragmentTestBinding
+import com.benyq.tikbili.ext.fullScreen
 import com.benyq.tikbili.ui.base.BaseFragment
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.QuickViewHolder
@@ -18,6 +20,8 @@ import com.chad.library.adapter.base.viewholder.QuickViewHolder
  *
  */
 class TestFragment: BaseFragment<FragmentTestBinding>(R.layout.fragment_test) {
+
+    private var fullScreen = false
     override fun onFragmentCreated(savedInstanceState: Bundle?) {
         dataBind.rvComments.layoutManager = LinearLayoutManager(requireActivity())
         val adapter = object: BaseQuickAdapter<String, QuickViewHolder>() {
@@ -42,6 +46,13 @@ class TestFragment: BaseFragment<FragmentTestBinding>(R.layout.fragment_test) {
             if (dataBind.refreshView.canCloseComment()) {
                 dataBind.refreshView.close()
             }
+        }
+        dataBind.ivFullscreen.setOnClickListener {
+            fullScreen = !fullScreen
+            requireActivity().requestedOrientation =
+                if (fullScreen) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            fullScreen(fullScreen)
         }
     }
 }

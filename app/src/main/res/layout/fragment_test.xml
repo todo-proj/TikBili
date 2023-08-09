@@ -43,5 +43,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <ImageView
+            android:id="@+id/iv_fullscreen"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_fullscreen"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/iv_reply"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

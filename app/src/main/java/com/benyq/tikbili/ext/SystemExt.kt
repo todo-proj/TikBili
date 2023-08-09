@@ -5,12 +5,14 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.view.Gravity
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowCompat.setDecorFitsSystemWindows
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
@@ -45,10 +47,20 @@ fun Activity.systemBarColor(@ColorInt color: Int) {
 fun Activity.fullScreen(fullScreen: Boolean = true) {
     val insetsController = WindowCompat.getInsetsController(window, window.decorView)
     if (fullScreen) {
+        setDecorFitsSystemWindows(window, false)
         insetsController.hide(WindowInsetsCompat.Type.systemBars())
         insetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        //允许window 的内容可以上移到刘海屏状态栏
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val lp = window.attributes
+            lp.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            window.attributes = lp
+        }
     }else {
+        setDecorFitsSystemWindows(window, true)
         insetsController.show(WindowInsetsCompat.Type.systemBars())
         insetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH

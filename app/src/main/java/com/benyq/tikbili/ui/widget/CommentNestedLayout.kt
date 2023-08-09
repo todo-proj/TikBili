@@ -3,12 +3,12 @@ package com.benyq.tikbili.ui.widget
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.animation.addListener
 import androidx.core.view.NestedScrollingParent3
@@ -55,7 +55,7 @@ class CommentNestedLayout @JvmOverloads constructor(
     }
 
     fun canCloseComment(): Boolean {
-        return contentChild.height != height && !(touchReleaseAnimator?.isRunning ?: false)
+        return contentChild.measuredHeight != height && !(touchReleaseAnimator?.isRunning ?: false)
     }
 
     fun open() {
@@ -67,7 +67,7 @@ class CommentNestedLayout @JvmOverloads constructor(
         openAnimator = ValueAnimator.ofInt(childHeight, viewHeight / 3).apply {
             duration = 300
             addUpdateListener {
-                contentChild.updateLayoutParams<LayoutParams> { height = it.animatedValue as Int }
+                contentChild.updateLayoutParams { height = it.animatedValue as Int }
             }
             addListener(onStart = {
                 if (it.duration != 0L) {
@@ -88,12 +88,14 @@ class CommentNestedLayout @JvmOverloads constructor(
         touchReleaseAnimator = ValueAnimator.ofInt(contentChild.height, height).apply {
             duration = 300
             addUpdateListener {
-                contentChild.updateLayoutParams<LayoutParams> { height = it.animatedValue as Int }
+                contentChild.updateLayoutParams { this.height = it.animatedValue as Int }
             }
             addListener(onStart = {
                 if (it.duration != 0L) {
                     onStateChangedListener?.onStateChanged(State.STATE_CLOSE)
                 }
+            }, onEnd = {
+                requestLayout()
             })
             start()
         }
@@ -183,6 +185,12 @@ class CommentNestedLayout @JvmOverloads constructor(
             }
             consumed[1] = consume
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        //屏幕旋转时，重新设置高度是MATCH_PARENT，不然横屏时会超出，竖屏时无法填满
+        contentChild.updateLayoutParams { height = ViewGroup.LayoutParams.MATCH_PARENT }
     }
 
     private fun closeAnimator() {

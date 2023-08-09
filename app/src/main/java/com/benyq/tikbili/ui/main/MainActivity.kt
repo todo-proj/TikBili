@@ -24,6 +24,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         systemBarColor(Color.BLACK)
         showFragment("Video")
+//        showFragment("Test")
         viewModel.mainContainer.uiStateFlow.collectState(this) {
 
         }
@@ -41,6 +42,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 supportFragmentManager.findFragmentByTag(tag) ?: when (tag) {
                     "Video" -> {
                         FragmentVideoContainer().apply {
+                            it.add(R.id.fl_container, this, tag)
+                        }
+                    }
+                    "Test" -> {
+                        TestFragment().apply {
                             it.add(R.id.fl_container, this, tag)
                         }
                     }
