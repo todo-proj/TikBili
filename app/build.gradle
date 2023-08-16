@@ -76,4 +76,6 @@ dependencies {
     implementation "com.bytedance.tools.codelocator:codelocator-core:2.0.3"
     // https://github.com/CymChad/BaseRecyclerViewAdapterHelper
     implementation "io.github.cymchad:BaseRecyclerViewAdapterHelper:4.0.0"
+
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
 }

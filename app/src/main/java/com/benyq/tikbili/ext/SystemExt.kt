@@ -98,7 +98,10 @@ suspend fun Context.alert(title: String, message: String): Boolean =
             }.show()
     }
 
-
+fun fromTIRAMISU() = fromSpecificVersion(Build.VERSION_CODES.TIRAMISU)
+fun beforeTIRAMISU() = beforeSpecificVersion(Build.VERSION_CODES.TIRAMISU)
+fun fromSV2() = fromSpecificVersion(Build.VERSION_CODES.S_V2)
+fun beforeSV2() = beforeSpecificVersion(Build.VERSION_CODES.S_V2)
 fun fromS() = fromSpecificVersion(Build.VERSION_CODES.S)
 fun beforeS() = beforeSpecificVersion(Build.VERSION_CODES.S)
 fun fromR() = fromSpecificVersion(Build.VERSION_CODES.R)

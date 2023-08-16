@@ -139,7 +139,7 @@ data class VideoReplyModel(
         @SerializedName("rcount")
         val rcount: Int,
         @SerializedName("replies")
-        val replies: List<Any>,
+        val replies: List<Reply>,
         @SerializedName("reply_control")
         val replyControl: ReplyControl,
         @SerializedName("root")
@@ -163,7 +163,7 @@ data class VideoReplyModel(
             @SerializedName("device")
             val device: String,
             @SerializedName("emote")
-            val emote: Map<String, Emote>,
+            val emote: Map<String, Emote>? = null,
             @SerializedName("jump_url")
             val jumpUrl: JumpUrl,
             @SerializedName("max_line")

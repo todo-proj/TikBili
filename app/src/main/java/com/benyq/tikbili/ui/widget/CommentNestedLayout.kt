@@ -15,6 +15,7 @@ import androidx.core.view.NestedScrollingParent3
 import androidx.core.view.NestedScrollingParentHelper
 import androidx.core.view.ViewCompat
 import androidx.core.view.updateLayoutParams
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  *
@@ -51,7 +52,7 @@ class CommentNestedLayout @JvmOverloads constructor(
     override fun onFinishInflate() {
         super.onFinishInflate()
         contentChild = getChildAt(0)
-        bottomChild = getChildAt(1)
+        bottomChild = findRecyclerView(getChildAt(1))
     }
 
     fun canCloseComment(): Boolean {
@@ -163,7 +164,7 @@ class CommentNestedLayout @JvmOverloads constructor(
     }
 
     override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
-        return true
+        return !bottomChild.canScrollVertically(-1)
     }
 
     override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
@@ -191,6 +192,18 @@ class CommentNestedLayout @JvmOverloads constructor(
         super.onConfigurationChanged(newConfig)
         //屏幕旋转时，重新设置高度是MATCH_PARENT，不然横屏时会超出，竖屏时无法填满
         contentChild.updateLayoutParams { height = ViewGroup.LayoutParams.MATCH_PARENT }
+    }
+
+    private fun findRecyclerView(view: View): View {
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                val child = view.getChildAt(i)
+                if (child is RecyclerView) {
+                    return child
+                }
+            }
+        }
+        return view
     }
 
     private fun closeAnimator() {

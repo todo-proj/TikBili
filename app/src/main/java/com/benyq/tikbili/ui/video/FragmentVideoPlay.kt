@@ -3,16 +3,22 @@ package com.benyq.tikbili.ui.video
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.benyq.tikbili.R
 import com.benyq.tikbili.bilibili.model.RecommendVideoModel
 import com.benyq.tikbili.databinding.FragmentVideoPlayBinding
 import com.benyq.tikbili.ext.fullScreen
 import com.benyq.tikbili.ext.gone
+import com.benyq.tikbili.ext.px
 import com.benyq.tikbili.ext.visible
 import com.benyq.tikbili.ext.visibleOrGone
 import com.benyq.tikbili.ui.LifeCycleLogObserver
@@ -183,7 +189,18 @@ class FragmentVideoPlay :
     }
 
     private fun initComments() {
+        commentsAdapter.scope = lifecycleScope
         dataBind.rvComments.layoutManager = LinearLayoutManager(requireActivity())
         dataBind.rvComments.adapter = commentsAdapter
+        dataBind.rvComments.addItemDecoration(object: ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                outRect.bottom = 15.px
+            }
+        })
     }
 }
