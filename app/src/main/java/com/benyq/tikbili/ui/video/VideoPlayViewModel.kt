@@ -102,7 +102,7 @@ class VideoPlayViewModel(private val context: Application) : BaseViewModel(conte
             .flowOn(Dispatchers.IO)
             .onEach {
                 it.getOrNull()?.let { url ->
-                    playVideo(url)
+                    playVideo(url, bvid)
                 }
             }.catch {  }.onCompletion {
                 Log.e("benyq", "queryVideoUrl onCompletion error: $it")
@@ -138,9 +138,10 @@ class VideoPlayViewModel(private val context: Application) : BaseViewModel(conte
         }
     }
 
-    private fun playVideo(url: String) {
+    private fun playVideo(url: String, bvid: String) {
         val mediaItem = MediaItem.Builder()
             .setUri(url)
+            .setCustomCacheKey(bvid)
             .build()
         val mediaSource: ProgressiveMediaSource =
             ProgressiveMediaSource.Factory(
