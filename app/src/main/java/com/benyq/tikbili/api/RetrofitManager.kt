@@ -2,7 +2,7 @@ package com.benyq.tikbili.api
 
 import android.util.Log
 import com.benyq.tikbili.bilibili.BilibiliCollectApi
-import com.benyq.tikbili.ext.MMKVValue
+import com.benyq.tikbili.base.ext.MMKVValue
 import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

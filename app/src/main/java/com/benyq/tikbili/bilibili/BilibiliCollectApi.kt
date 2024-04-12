@@ -3,7 +3,6 @@ package com.benyq.tikbili.bilibili
 import com.benyq.tikbili.bilibili.model.AccountModel
 import com.benyq.tikbili.bilibili.model.BiliBiliResponse
 import com.benyq.tikbili.bilibili.model.RecommendVideoData
-import com.benyq.tikbili.bilibili.model.RecommendVideoModel
 import com.benyq.tikbili.bilibili.model.VideoDetailModel
 import com.benyq.tikbili.bilibili.model.VideoReplyModel
 import com.benyq.tikbili.bilibili.model.VideoUrlModel

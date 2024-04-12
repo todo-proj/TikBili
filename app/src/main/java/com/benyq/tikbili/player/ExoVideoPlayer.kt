@@ -4,7 +4,15 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.TextureView
+import android.view.Surface
+import com.benyq.tikbili.base.utils.L
+import com.benyq.tikbili.player.player.event.ActionPause
+import com.benyq.tikbili.player.player.event.ActionStart
+import com.benyq.tikbili.player.player.event.InfoProgressUpdate
+import com.benyq.tikbili.player.source.MediaSource
+import com.benyq.tikbili.player.player.PlayerAdapter
+import com.benyq.tikbili.player.player.event.ActionSetSurface
+import com.benyq.tikbili.player.player.event.InfoVideoRenderingStart
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
@@ -12,6 +20,8 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.Timeline
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DataSpec
+import com.google.android.exoplayer2.upstream.cache.CacheWriter
 import com.google.android.exoplayer2.video.VideoSize
 
 /**
@@ -20,7 +30,7 @@ import com.google.android.exoplayer2.video.VideoSize
  * @date 2023/5/26
  *
  */
-class ExoVideoPlayer(private val context: Context, private val playWhenReady: Boolean) {
+class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
 
     companion object {
         private const val TAG = "ExoVideoPlayer"
@@ -28,8 +38,8 @@ class ExoVideoPlayer(private val context: Context, private val playWhenReady: Bo
 
     //region 视频处理
     /*视频播放器*/
-    private var mSimpleExoPlayer: SimpleExoPlayer? = null
-    private var mOnVideoPlayListener: OnVideoPlayListener? = null
+    private lateinit var mSimpleExoPlayer: SimpleExoPlayer
+    private var mMediaStore: MediaSource? = null
 
     var isVideoPlaying = false
         private set
@@ -40,17 +50,20 @@ class ExoVideoPlayer(private val context: Context, private val playWhenReady: Bo
     private val mMediaEventListener = object : Player.Listener {
 
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+            L.d(this@ExoVideoPlayer, "onPlayWhenReadyChanged", playWhenReady, reason)
         }
 
         override fun onPlaybackStateChanged(state: Int) {
-            mOnVideoPlayListener?.onPlaybackStateChanged(state)
+            L.d(this@ExoVideoPlayer, "onPlaybackStateChanged", state)
         }
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             isVideoPlaying = isPlaying
-            mOnVideoPlayListener?.onPlayingChanged(isPlaying)
             if (isPlaying) {
                 mainHandler.post(updateProgressAction)
+                setState(PlayState.STATE_STARTED)
+            }else {
+                mainHandler.removeCallbacks(updateProgressAction)
             }
         }
 
@@ -61,113 +74,130 @@ class ExoVideoPlayer(private val context: Context, private val playWhenReady: Bo
                 ExoPlaybackException.TYPE_UNEXPECTED -> "其他异常"
                 else -> "其他异常"
             }
-            mOnVideoPlayListener?.onError(message)
+            L.e(this@ExoVideoPlayer, "onPlayerError", message)
         }
 
         override fun onVideoSizeChanged(videoSize: VideoSize) {
             super.onVideoSizeChanged(videoSize)
-            mOnVideoPlayListener?.onVideoSizeChanged(videoSize.width, videoSize.height)
         }
 
-        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-            super.onTimelineChanged(timeline, reason)
-            Log.d(TAG, "onTimelineChanged: $timeline.dur")
+        override fun onRenderedFirstFrame() {
+            super.onRenderedFirstFrame()
+            _dispatcher.obtain(InfoVideoRenderingStart::class.java).dispatch()
+            L.d(this@ExoVideoPlayer, "onRenderedFirstFrame")
         }
     }
 
     fun create() {
-        createMediaPlayer(context, playWhenReady)
+        createMediaPlayer(context)
         updateProgressAction = object: Runnable {
             override fun run() {
-                val position = mSimpleExoPlayer?.currentPosition ?: 0L
-                val bufferPosition = mSimpleExoPlayer?.contentBufferedPosition ?: 0L
-                val duration = mSimpleExoPlayer?.duration ?: 0L
-                mOnVideoPlayListener?.onProgressUpdate(position, bufferPosition)
-                mainHandler.postDelayed(this, 500)
+                val position = mSimpleExoPlayer.currentPosition
+                val bufferPosition = mSimpleExoPlayer.contentBufferedPosition
+                val duration = mSimpleExoPlayer.duration
+                _dispatcher.obtain(InfoProgressUpdate::class.java).init(position, duration).dispatch()
+                mainHandler.postDelayed(this, 30)
             }
         }
     }
 
-    fun playVideo(url: String) {
+    private fun playVideo(key: String, url: String) {
         val mediaItem = MediaItem.Builder()
+            .setCustomCacheKey(key)
             .setUri(url)
             .build()
         val mediaSource: ProgressiveMediaSource =
             ProgressiveMediaSource.Factory(MediaCacheFactory.getCacheFactory(context.applicationContext))
                 .createMediaSource(mediaItem)
-        mSimpleExoPlayer?.setMediaSource(mediaSource)
-        mSimpleExoPlayer?.prepare()
+        mSimpleExoPlayer.setMediaSource(mediaSource)
+        mSimpleExoPlayer.prepare()
     }
 
-    fun setRenderView(textureView: TextureView) {
-        mSimpleExoPlayer?.setVideoTextureView(textureView)
+    override fun getDuration(): Long {
+        return mSimpleExoPlayer.duration
     }
 
-    fun setVideoPlayListener(listener: OnVideoPlayListener) {
-        mOnVideoPlayListener = listener
+    override fun getCurrentPosition(): Long {
+        return mSimpleExoPlayer.currentPosition
     }
 
-    fun getDuration(): Long {
-        return mSimpleExoPlayer?.duration ?: 0
+    override fun getBufferPercent(): Int {
+        return (mSimpleExoPlayer.contentBufferedPosition / mSimpleExoPlayer.duration).toInt()
     }
 
-    fun getVideoSize(): VideoSize? {
-        return mSimpleExoPlayer?.videoSize
+    override fun seekTo(progress: Long) {
+        mSimpleExoPlayer.seekTo(progress)
     }
 
-    fun getPlayState(): Int {
-        return mSimpleExoPlayer?.playbackState ?: Player.STATE_IDLE
+    override fun setDataSource(mediaSource: MediaSource) {
+        mMediaStore = mediaSource
     }
 
-    fun seekTo(progress: Long) {
-        mSimpleExoPlayer?.seekTo(progress)
+    override fun getDataSource(): MediaSource? {
+        return mMediaStore
     }
 
-    fun pauseVideo() {
-        mSimpleExoPlayer?.pause()
+    override fun setStartWhenPrepared(startWhenPrepared: Boolean) {
+        mSimpleExoPlayer.playWhenReady = startWhenPrepared
     }
 
-    fun startVideo() {
-        mSimpleExoPlayer?.play()
+    override fun prepare() {
+        mMediaStore?.let {
+            playVideo(it.getUniqueId(), it.url)
+        }
     }
 
-    fun stopVideo() {
-        mSimpleExoPlayer?.pause()
-        mSimpleExoPlayer?.seekTo(0)
+    override fun start() {
+        _dispatcher.obtain(ActionStart::class.java).dispatch()
+        mSimpleExoPlayer.play()
+        setState(PlayState.STATE_STARTED)
     }
 
-    fun release() {
-        mSimpleExoPlayer?.stop()
-        mSimpleExoPlayer?.release()
+    override fun pause() {
+        _dispatcher.obtain(ActionPause::class.java).dispatch()
+        mSimpleExoPlayer.pause()
+        setState(PlayState.STATE_PAUSED)
+    }
+
+    override fun stop() {
+        getDataSource()?.let {
+            VideoPlayProgressRecorder.record(it, mSimpleExoPlayer.currentPosition)
+        }
+        mSimpleExoPlayer.pause()
+        mSimpleExoPlayer.seekTo(0)
+    }
+
+    override fun release() {
+        getDataSource()?.let {
+            VideoPlayProgressRecorder.record(it, mSimpleExoPlayer.currentPosition)
+        }
+        mSimpleExoPlayer.stop()
+        mSimpleExoPlayer.release()
+    }
+
+    override fun setSurface(surface: Surface?) {
+        surface?.let {
+            _dispatcher.obtain(ActionSetSurface::class.java).init(surface).dispatch()
+            mSimpleExoPlayer.setVideoSurface(it)
+        }
+    }
+
+    override fun getVideoWidth(): Int {
+        return mSimpleExoPlayer.videoSize.width
+    }
+
+    override fun getVideoHeight(): Int {
+        return mSimpleExoPlayer.videoSize.height
     }
 
     /**
      * 初始化播放器
      */
-    private fun createMediaPlayer(context: Context, playWhenReady: Boolean) {
+    private fun createMediaPlayer(context: Context) {
         val simplePlayer = SimpleExoPlayer.Builder(context)
             .build()
         simplePlayer.addListener(mMediaEventListener)
-        simplePlayer.playWhenReady = playWhenReady
         simplePlayer.repeatMode = Player.REPEAT_MODE_ALL
         mSimpleExoPlayer = simplePlayer
-    }
-
-
-    interface OnVideoPlayListener {
-
-        fun onPlayingChanged(isPlaying: Boolean){}
-
-        fun onPlaybackStateChanged(state: Int){}
-
-        /**
-         * 播放出错
-         * @param error String 错误信息
-         */
-        fun onError(error: String){}
-
-        fun onVideoSizeChanged(width: Int, height: Int){}
-
-        fun onProgressUpdate(position: Long, bufferedPosition: Long){}
     }
 }

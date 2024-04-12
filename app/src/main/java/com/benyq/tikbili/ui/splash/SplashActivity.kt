@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.benyq.tikbili.R
 import com.benyq.tikbili.utils.StartLogHelper
 import com.benyq.tikbili.databinding.ActivitySplashBinding
-import com.benyq.tikbili.ext.systemBarColor
+import com.benyq.tikbili.base.ext.systemBarColor
 import com.benyq.tikbili.ui.base.BaseActivity
 import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.login.LoginActivity
@@ -48,7 +48,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
                 startId: Int,
                 endId: Int,
             ) {
-                viewModel.checkLogin()
+//                viewModel.checkLogin()
                 isMotionRunning = true
             }
 
@@ -62,6 +62,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
 
             override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
                 isMotionRunning = false
+                waitLaunch(Intent(this@SplashActivity, MainActivity::class.java))
             }
 
             override fun onTransitionTrigger(

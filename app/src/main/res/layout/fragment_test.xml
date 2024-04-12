@@ -3,53 +3,21 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.benyq.tikbili.ui.widget.CommentNestedLayout
-            android:id="@+id/refresh_view"
+        <com.benyq.tikbili.player.scene.ShortVideoPageView
+            android:id="@+id/shortPage"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent"/>
 
-            <FrameLayout
-                android:id="@+id/fl_video"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/purple_500"
-                android:layout_gravity="bottom">
 
-                <com.benyq.tikbili.ui.widget.TiktokVideoLoadingView
-                    android:id="@+id/loading"
-                    android:layout_gravity="center"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"/>
+        <com.benyq.tikbili.ui.widget.TiktokVideoLoadingView
+            android:id="@+id/loading"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"/>
 
-            </FrameLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_comments"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-        </com.benyq.tikbili.ui.widget.CommentNestedLayout>
-
-        <ImageView
-            android:id="@+id/iv_reply"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_comment"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <ImageView
-            android:id="@+id/iv_fullscreen"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_fullscreen"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/iv_reply"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 </layout>

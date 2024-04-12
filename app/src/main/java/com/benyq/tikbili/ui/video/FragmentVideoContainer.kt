@@ -1,23 +1,18 @@
 package com.benyq.tikbili.ui.video
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.benyq.tikbili.R
 import com.benyq.tikbili.databinding.FragmentVideoContainerBinding
-import com.benyq.tikbili.ext.gone
-import com.benyq.tikbili.ext.overScrollNever
-import com.benyq.tikbili.ext.visible
+import com.benyq.tikbili.base.ext.gone
+import com.benyq.tikbili.base.ext.overScrollNever
+import com.benyq.tikbili.base.ext.visible
 import com.benyq.tikbili.ui.base.BaseFragment
 import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 
 /**
  *

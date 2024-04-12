@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ClipImageView">
+        <attr name="clip_type" format="string" />
+        <attr name="round_radius" format="float" />
+        <attr name="bound_color" format="color" />
+        <attr name="enable_bound" format="boolean" />
+    </declare-styleable>
+</resources>

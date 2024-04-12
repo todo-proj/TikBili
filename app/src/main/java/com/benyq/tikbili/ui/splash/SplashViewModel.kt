@@ -1,21 +1,16 @@
 package com.benyq.tikbili.ui.splash
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.benyq.tikbili.api.ApiThrowable
 import com.benyq.tikbili.bilibili.BiliBiliConstant
-import com.benyq.tikbili.ext.ifTrue
+import com.benyq.tikbili.base.ext.ifTrue
 import com.benyq.tikbili.ui.base.BaseViewModel
 import com.benyq.tikbili.ui.base.mvi.extension.containers
-import com.benyq.tikbili.ui.main.MainPageEvent
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withTimeout
-import java.lang.IllegalStateException
 
 /**
  *

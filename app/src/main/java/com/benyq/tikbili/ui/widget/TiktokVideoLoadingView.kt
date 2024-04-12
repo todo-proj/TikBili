@@ -128,20 +128,18 @@ class TiktokVideoLoadingView @JvmOverloads constructor(
         startLoading()
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas?.let {
-            if (isNormal) {
-                paint.color = Color.RED
-                it.drawCircle(redCircleInfo.currentPoint.x, redCircleInfo.currentPoint.y, innerRadius, paint)
-                paint.color = Color.BLUE
-                it.drawCircle(blueCircleInfo.currentPoint.x, blueCircleInfo.currentPoint.y, outerRadius, paint)
-            }else {
-                paint.color = Color.BLUE
-                it.drawCircle(blueCircleInfo.currentPoint.x, blueCircleInfo.currentPoint.y, innerRadius, paint)
-                paint.color = Color.RED
-                it.drawCircle(redCircleInfo.currentPoint.x, redCircleInfo.currentPoint.y, outerRadius, paint)
-            }
+        if (isNormal) {
+            paint.color = Color.RED
+            canvas.drawCircle(redCircleInfo.currentPoint.x, redCircleInfo.currentPoint.y, innerRadius, paint)
+            paint.color = Color.BLUE
+            canvas.drawCircle(blueCircleInfo.currentPoint.x, blueCircleInfo.currentPoint.y, outerRadius, paint)
+        }else {
+            paint.color = Color.BLUE
+            canvas.drawCircle(blueCircleInfo.currentPoint.x, blueCircleInfo.currentPoint.y, innerRadius, paint)
+            paint.color = Color.RED
+            canvas.drawCircle(redCircleInfo.currentPoint.x, redCircleInfo.currentPoint.y, outerRadius, paint)
         }
     }
 

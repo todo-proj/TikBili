@@ -2,6 +2,9 @@ package com.benyq.tikbili
 
 import android.app.Application
 import android.content.Context
+import com.benyq.tikbili.base.utils.L
+import com.benyq.tikbili.player.ExoPlayerFactory
+import com.benyq.tikbili.player.player.IPlayer
 import com.benyq.tikbili.utils.StartLogHelper
 import com.tencent.mmkv.MMKV
 
@@ -23,7 +26,9 @@ class TikBiliApp: Application() {
     override fun onCreate() {
         super.onCreate()
         appCtx = this
+        L.ENABLE_LOG = BuildConfig.DEBUG
         MMKV.initialize(this)
+        IPlayer.Factory.Default.set(ExoPlayerFactory(this))
         StartLogHelper.getApplicationTime()
     }
 }

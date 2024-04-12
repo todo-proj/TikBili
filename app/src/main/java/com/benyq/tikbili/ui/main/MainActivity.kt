@@ -7,8 +7,7 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import com.benyq.tikbili.R
 import com.benyq.tikbili.databinding.ActivityMainBinding
-import com.benyq.tikbili.ext.fullScreen
-import com.benyq.tikbili.ext.systemBarColor
+import com.benyq.tikbili.base.ext.systemBarColor
 import com.benyq.tikbili.ui.base.BaseActivity
 import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
@@ -23,8 +22,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         systemBarColor(Color.BLACK)
-        showFragment("Video")
-//        showFragment("Test")
+//        showFragment("Video")
+        showFragment("Test")
         viewModel.mainContainer.uiStateFlow.collectState(this) {
 
         }

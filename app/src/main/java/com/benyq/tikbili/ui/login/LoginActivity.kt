@@ -7,15 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.benyq.tikbili.R
 import com.benyq.tikbili.databinding.ActivityLoginBinding
-import com.benyq.tikbili.ext.MMKVValue
-import com.benyq.tikbili.ext.fromM
+import com.benyq.tikbili.base.ext.MMKVValue
+import com.benyq.tikbili.base.ext.fromM
 import com.benyq.tikbili.ui.base.BaseActivity
 
 /**
