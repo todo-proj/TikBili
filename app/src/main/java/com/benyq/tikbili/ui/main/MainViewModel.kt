@@ -3,7 +3,7 @@ package com.benyq.tikbili.ui.main
 import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.benyq.tikbili.api.ApiThrowable
+import com.benyq.tikbili.base.api.ApiThrowable
 import com.benyq.tikbili.bilibili.BiliBiliConstant
 import com.benyq.tikbili.bilibili.BiliRemoteRepository
 import com.benyq.tikbili.ui.base.BaseViewModel

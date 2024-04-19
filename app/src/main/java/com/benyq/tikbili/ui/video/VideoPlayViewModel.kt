@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Matrix
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.benyq.tikbili.bilibili.BiliRemoteRepository
 import com.benyq.tikbili.player.MediaCacheFactory
 import com.benyq.tikbili.ui.base.BaseViewModel
 import com.benyq.tikbili.ui.base.mvi.extension.containers
@@ -36,6 +37,7 @@ import java.sql.Time
  */
 class VideoPlayViewModel(private val context: Application) : BaseViewModel(context) {
 
+    private val repository = BiliRemoteRepository()
     val container by containers<VideoPlayState, VideoPlayEvent>(VideoPlayState())
     var player: SimpleExoPlayer = SimpleExoPlayer.Builder(context).build()
     private val progressAction: Runnable

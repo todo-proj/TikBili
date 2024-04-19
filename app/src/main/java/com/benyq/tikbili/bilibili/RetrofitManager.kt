@@ -1,7 +1,6 @@
-package com.benyq.tikbili.api
+package com.benyq.tikbili.bilibili
 
 import android.util.Log
-import com.benyq.tikbili.bilibili.BilibiliCollectApi
 import com.benyq.tikbili.base.ext.MMKVValue
 import com.google.gson.Gson
 import okhttp3.Interceptor
@@ -36,7 +35,7 @@ object RetrofitManager {
                 .addHeader("Origin","https://www.bilibili.com")
                 .addHeader("Accept","*/*")
                 .addHeader("Accept-Language","zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
-                .addHeader("Cookie",biliCookie)
+                .addHeader("Cookie", biliCookie)
                 .build()
             chain.proceed(newBuilder)
         }

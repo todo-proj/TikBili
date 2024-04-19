@@ -109,7 +109,7 @@ data class VideoReplyModel(
         @SerializedName("assist")
         val assist: Int,
         @SerializedName("attr")
-        val attr: Int,
+        val attr: Long,
         @SerializedName("content")
         val content: Content,
         @SerializedName("count")
@@ -117,7 +117,7 @@ data class VideoReplyModel(
         @SerializedName("ctime")
         val ctime: Long,
         @SerializedName("dialog")
-        val dialog: Int,
+        val dialog: Long,
         @SerializedName("fansgrade")
         val fansgrade: Int,
         @SerializedName("folder")
@@ -133,7 +133,7 @@ data class VideoReplyModel(
         @SerializedName("oid")
         val oid: String,
         @SerializedName("parent")
-        val parent: Int,
+        val parent: Long,
         @SerializedName("parent_str")
         val parentStr: String,
         @SerializedName("rcount")
@@ -143,7 +143,7 @@ data class VideoReplyModel(
         @SerializedName("reply_control")
         val replyControl: ReplyControl,
         @SerializedName("root")
-        val root: Int,
+        val root: Long,
         @SerializedName("root_str")
         val rootStr: String,
         @SerializedName("rpid")
@@ -177,7 +177,7 @@ data class VideoReplyModel(
         ) {
             data class Emote(
                 @SerializedName("attr")
-                val attr: Int,
+                val attr: Long,
                 @SerializedName("id")
                 val id: Int,
                 @SerializedName("jump_title")
@@ -343,7 +343,7 @@ data class VideoReplyModel(
 
                 data class Pendant(
                     @SerializedName("id")
-                    val id: Int,
+                    val id: Long,
                     @SerializedName("image")
                     val image: String,
                     @SerializedName("image_enhance")

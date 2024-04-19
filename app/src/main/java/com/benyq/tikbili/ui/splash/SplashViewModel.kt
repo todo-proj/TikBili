@@ -2,9 +2,10 @@ package com.benyq.tikbili.ui.splash
 
 import android.app.Application
 import androidx.lifecycle.viewModelScope
-import com.benyq.tikbili.api.ApiThrowable
+import com.benyq.tikbili.base.api.ApiThrowable
 import com.benyq.tikbili.bilibili.BiliBiliConstant
 import com.benyq.tikbili.base.ext.ifTrue
+import com.benyq.tikbili.bilibili.BiliRemoteRepository
 import com.benyq.tikbili.ui.base.BaseViewModel
 import com.benyq.tikbili.ui.base.mvi.extension.containers
 import kotlinx.coroutines.flow.catch
@@ -20,6 +21,7 @@ import kotlinx.coroutines.withTimeout
  */
 class SplashViewModel(context: Application): BaseViewModel(context) {
 
+    private val repository = BiliRemoteRepository()
     val container by containers<SplashState, SplashEvent>(SplashState(0))
 
     fun checkLogin() {

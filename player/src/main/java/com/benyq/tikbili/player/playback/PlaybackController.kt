@@ -16,8 +16,8 @@ import java.lang.ref.WeakReference
  * player 和 VideoView 的交互与事件分发
  */
 class PlaybackController(
-    val playerPool: IPlayerPool = IPlayerPool.DEFAULT,
-    val playerFactory: IPlayer.Factory = IPlayer.Factory.Default.get(),
+    private val playerPool: IPlayerPool = IPlayerPool.DEFAULT,
+    private val playerFactory: IPlayer.Factory = IPlayer.Factory.Default.get(),
 ) {
 
     private val tag = "PlaybackController"
@@ -52,7 +52,7 @@ class PlaybackController(
     }
 
 
-    fun bindPlayer(newPlayer: IPlayer?) {
+    private fun bindPlayer(newPlayer: IPlayer?) {
         if (_player == null && newPlayer != null && !newPlayer.isReleased()) {
             _player = newPlayer
             newPlayer.addPlayerListener(_playEventListener)
@@ -60,7 +60,7 @@ class PlaybackController(
         }
     }
 
-    fun unbindPlayer(recycle: Boolean = true) {
+    private fun unbindPlayer(recycle: Boolean = true) {
         _player?.let {
             if (recycle) {
                 it.setSurface(null)
@@ -81,6 +81,10 @@ class PlaybackController(
 
     fun removeAllPlaybackListener() {
         _dispatcher.removeAllListeners()
+    }
+
+    fun dispatcher(): EventDispatcher {
+        return _dispatcher
     }
 
     fun startPlayback(startWhenPrepared: Boolean = true) {

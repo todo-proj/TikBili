@@ -111,6 +111,14 @@ abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLaye
         return context() as? FragmentActivity
     }
 
+    fun startPlayback() {
+        _layerHost?.videoView()?.startPlayback()
+    }
+
+    fun stopPlayback() {
+        _layerHost?.videoView()?.stopPlayback()
+    }
+
     open fun show() {
         if (isShowing()) return
         val layerHost = _layerHost ?: return
@@ -126,6 +134,15 @@ abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLaye
         if (!isShowing()) return
         val layerHost = _layerHost ?: return
         layerHost.removeLayerView(this)
+    }
+
+    open fun hide() {
+        if (!isShowing()) return
+        _layerView?.let {
+            if (it.visibility != View.GONE) {
+                it.visibility = View.GONE
+            }
+        }
     }
 
     fun isShowing(): Boolean {

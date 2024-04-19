@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import com.benyq.tikbili.R
 import com.benyq.tikbili.databinding.ActivityMainBinding
 import com.benyq.tikbili.base.ext.systemBarColor
+import com.benyq.tikbili.scene.shortvideo.ui.ShortVideoFragment
 import com.benyq.tikbili.ui.base.BaseActivity
 import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
-import com.benyq.tikbili.ui.test.TestFragment
 import com.benyq.tikbili.ui.video.FragmentVideoContainer
 
 
@@ -23,7 +23,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         systemBarColor(Color.BLACK)
 //        showFragment("Video")
-        showFragment("Test")
+        showFragment("ShortVideo")
         viewModel.mainContainer.uiStateFlow.collectState(this) {
 
         }
@@ -44,8 +44,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                             it.add(R.id.fl_container, this, tag)
                         }
                     }
-                    "Test" -> {
-                        TestFragment().apply {
+                    "ShortVideo" -> {
+                        ShortVideoFragment().apply {
                             it.add(R.id.fl_container, this, tag)
                         }
                     }

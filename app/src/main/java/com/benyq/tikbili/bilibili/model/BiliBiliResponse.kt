@@ -1,5 +1,7 @@
 package com.benyq.tikbili.bilibili.model
 
+import com.benyq.tikbili.base.api.SodaResponse
+
 /**
  *
  * @author benyq
@@ -7,7 +9,18 @@ package com.benyq.tikbili.bilibili.model
  *
  */
 data class BiliBiliResponse<T>(
-    val code: Int,
-    val message: String,
-    val data: T,
-)
+    private val code: Int,
+    private val message: String,
+    private val data: T,
+): SodaResponse<T>{
+    override fun isSuccess(): Boolean {
+        return code == 0
+    }
+
+    override fun getMessage() = message
+
+    override fun getErrorCode() = code
+
+    override fun getRealData(): T = data
+
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <FrameLayout
+        android:id="@+id/fl_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black">
+
+        <com.benyq.tikbili.scene.shortvideo.ui.ShortVideoPageView
+            android:id="@+id/shortPage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.benyq.tikbili.ui.widget.TiktokVideoLoadingView
+            android:id="@+id/loading"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center" />
+
+        <com.benyq.tikbili.scene.shortvideo.ui.comment.ShortVideoCommentView
+            android:id="@+id/comment_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"/>
+
+    </FrameLayout>
+</layout>

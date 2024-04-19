@@ -1,4 +1,4 @@
-package com.benyq.tikbili.player.scene
+package com.benyq.tikbili.scene.shortvideo.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,11 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.benyq.tikbili.player.helper.DisplayModeHelper
 import com.benyq.tikbili.player.playback.VideoLayerHost
 import com.benyq.tikbili.player.playback.VideoView
-import com.benyq.tikbili.player.playback.layer.FeedRightLayer
+import com.benyq.tikbili.scene.layer.FeedRightLayer
 import com.benyq.tikbili.player.playback.layer.PauseLayer
 import com.benyq.tikbili.player.playback.layer.ShortVideoCoverLayer
 import com.benyq.tikbili.player.playback.layer.SimpleProgressBarLayer
 import com.benyq.tikbili.player.source.MediaSource
+import com.benyq.tikbili.utils.StringUtils
+import java.net.URLDecoder
 
 /**
  *
@@ -23,14 +25,16 @@ import com.benyq.tikbili.player.source.MediaSource
  */
 class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
 
-    private val _items = mutableListOf<MediaSource>()
+    private val _items = mutableListOf<ShortVideoModel>()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(items: List<MediaSource>) {
+    fun setItems(items: List<ShortVideoModel>) {
         _items.clear()
         _items.addAll(items)
         notifyDataSetChanged()
     }
+
+    fun items() = _items
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.create(parent)
@@ -66,6 +70,21 @@ class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
                 )
                 return ViewHolder(videoView)
             }
+
+            private fun createVideoView(context: Context): VideoView {
+                val videoView = VideoView(context)
+                val layerHost = VideoLayerHost(context)
+                layerHost.addLayer(ShortVideoCoverLayer())
+                layerHost.addLayer(PauseLayer())
+                layerHost.addLayer(FeedRightLayer())
+                layerHost.addLayer(SimpleProgressBarLayer())
+
+                layerHost.attachToVideoView(videoView)
+                videoView.setupDisplayView()
+                videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT)
+                videoView.setBackgroundColor(Color.BLACK)
+                return videoView
+            }
         }
 
         val videoView: VideoView = itemView as VideoView
@@ -76,7 +95,8 @@ class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
             )
         }
 
-        fun bind(mediaSource: MediaSource) {
+        fun bind(model: ShortVideoModel) {
+            val mediaSource = toMediaSource(model)
             val currentSource = videoView.dataSource()
             if (currentSource == null) {
                 videoView.bindDataSource(mediaSource)
@@ -91,30 +111,32 @@ class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
                     }
                 }
             }
-            videoView.setOnClickListener {
-                val player = videoView.player() ?: return@setOnClickListener
-                if (player.isPlaying()) {
-                    videoView.pausePlayback()
-                }else {
-                    videoView.startPlayback()
-                }
-            }
         }
+
+        private fun toMediaSource(model: ShortVideoModel): MediaSource {
+            val bvid = model.videoDetail.bvid
+            val videoDetail = model.videoDetail
+            return MediaSource(
+                bvid,
+                model.videoUrl,
+                videoDetail.pic,
+                videoDetail.dimension.width,
+                videoDetail.dimension.height,
+                MediaSource.Stat(
+                    StringUtils.num2String(videoDetail.stat.like),
+                    StringUtils.num2String(videoDetail.stat.coin),
+                    StringUtils.num2String(videoDetail.stat.reply),
+                    StringUtils.num2String(videoDetail.stat.favorite),
+                    StringUtils.num2String(videoDetail.stat.share)
+                ),
+                MediaSource.Poster(
+                    videoDetail.owner.face,
+                    videoDetail.owner.mid,
+                    videoDetail.owner.name
+                )
+            )
+        }
+
     }
 
-}
-
-private fun createVideoView(context: Context): VideoView {
-    val videoView = VideoView(context)
-    val layerHost = VideoLayerHost(context)
-    layerHost.addLayer(ShortVideoCoverLayer())
-    layerHost.addLayer(PauseLayer())
-    layerHost.addLayer(FeedRightLayer())
-    layerHost.addLayer(SimpleProgressBarLayer())
-
-    layerHost.attachToVideoView(videoView)
-    videoView.setupDisplayView()
-    videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT)
-    videoView.setBackgroundColor(Color.BLACK)
-    return videoView
 }

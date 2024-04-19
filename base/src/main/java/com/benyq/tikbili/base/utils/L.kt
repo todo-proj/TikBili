@@ -38,13 +38,13 @@ object L {
         }
     }
 
-    fun e(o: Any, method: String, vararg args: Any) {
+    fun e(o: Any, method: String, vararg args: Any?) {
         if (ENABLE_LOG) {
             Log.e(TAG, createLog(o, method, *args))
         }
     }
 
-    private fun createLog(o: Any, method: String, vararg args: Any): String {
+    private fun createLog(o: Any, method: String, vararg args: Any?): String {
         val msg = StringBuilder("[" + obj2String(o) + "]").append(" -> ").append(method)
         for (arg in args) {
             msg.append(" -> ").append(obj2String(arg))

@@ -1,4 +1,4 @@
-package com.benyq.tikbili.api
+package com.benyq.tikbili.base.api
 
 /**
  *

@@ -3,6 +3,7 @@ package com.benyq.tikbili.ui.video
 import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.benyq.tikbili.bilibili.BiliRemoteRepository
 import com.benyq.tikbili.ui.base.BaseViewModel
 import com.benyq.tikbili.ui.base.mvi.extension.containers
 import kotlinx.coroutines.flow.catch
@@ -18,6 +19,8 @@ import kotlinx.coroutines.flow.onStart
  *
  */
 class VideoContainerViewModel(application: Application, private val savedStateHandle: SavedStateHandle) : BaseViewModel(application) {
+
+    private val repository = BiliRemoteRepository()
 
     val container by containers<VideoContainerState, VideoContainerEvent>(
         VideoContainerState(false)

@@ -8,6 +8,7 @@ import com.benyq.tikbili.player.playback.PlayerEvent
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.playback.PlaybackEvent
+import com.benyq.tikbili.player.playback.VideoView
 import com.benyq.tikbili.player.playback.layer.base.AnimateLayer
 import com.benyq.tikbli.player.R
 
@@ -31,6 +32,20 @@ class PauseLayer: AnimateLayer() {
 
     override fun onUnbindPlaybackController(controller: PlaybackController?) {
         controller?.removePlaybackListener(listener)
+    }
+
+    override fun onVideoViewClick(videoView: VideoView) {
+        val player = videoView.player() ?: return
+        if (player.isInPlaybackState()) {
+            if (player.isPlaying()) {
+                player.pause()
+            }else {
+                player.start()
+            }
+        }else {
+            startPlayback()
+        }
+
     }
 
     private val listener = object: EventDispatcher.EventListener {

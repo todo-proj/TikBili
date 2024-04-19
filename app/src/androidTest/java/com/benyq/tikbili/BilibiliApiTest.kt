@@ -1,8 +1,7 @@
 package com.benyq.tikbili
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.benyq.tikbili.api.RetrofitManager
-import com.benyq.tikbili.bilibili.BilibiliCollectApi
+import com.benyq.tikbili.bilibili.RetrofitManager
 import com.benyq.tikbili.bilibili.model.BiliBiliResponse
 import com.benyq.tikbili.bilibili.model.VideoReplyModel
 import com.benyq.tikbili.bilibili.model.VideoUrlModel
@@ -23,7 +22,7 @@ class BilibiliApiTest {
     fun useAppContext() {
         runBlocking {
             val response = videoReplay()
-            println(response.code)
+            println(response.getErrorCode())
         }
     }
 

@@ -1,7 +1,5 @@
 package com.benyq.tikbili.player.dispather
 
-import com.benyq.tikbili.player.dispather.EventDispatcher
-
 /**
  *
  * @author benyq
@@ -22,5 +20,9 @@ open class Event(val code: Int) {
 
     open fun recycle() {
         _dispatcher = null
+    }
+
+    fun <E> cast(clazz: Class<E>): E {
+        return clazz.cast(this)
     }
 }

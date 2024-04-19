@@ -1,4 +1,4 @@
-package com.benyq.tikbili.player.scene
+package com.benyq.tikbili.scene.shortvideo.ui
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,7 +6,11 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.benyq.tikbili.base.ext.findItemViewByPosition
+import com.benyq.tikbili.player.dispather.Event
+import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.PlaybackController
+import com.benyq.tikbili.player.playback.PlaybackEvent
+import com.benyq.tikbili.player.playback.PlayerEvent
 import com.benyq.tikbili.player.playback.VideoView
 import com.benyq.tikbili.player.source.MediaSource
 
@@ -37,11 +41,22 @@ class ShortVideoPageView @JvmOverloads constructor(
                 togglePlayback(position)
             }
         })
-        addView(viewPager, LayoutParams(LayoutParams.MATCH_PARENT,
+        addView(viewPager, LayoutParams(
+            LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT))
+
+        controller.addPlaybackListener(object : EventDispatcher.EventListener {
+            override fun onEvent(event: Event) {
+                when(event.code) {
+                    PlayerEvent.State.COMPLETED -> {
+
+                    }
+                }
+            }
+        })
     }
 
-    fun setItems(items: List<MediaSource>) {
+    fun setItems(items: List<ShortVideoModel>) {
         shortVideoAdapter.setItems(items)
         viewPager.getChildAt(0).post { this.play() }
     }
@@ -69,4 +84,12 @@ class ShortVideoPageView @JvmOverloads constructor(
         }
     }
 
+    fun controller(): PlaybackController {
+        return controller
+    }
+
+    fun currentItem(): ShortVideoModel? {
+        val currentIndex = viewPager.currentItem
+        return shortVideoAdapter.items().getOrNull(currentIndex)
+    }
 }

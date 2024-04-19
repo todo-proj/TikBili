@@ -1,8 +1,5 @@
 package com.benyq.tikbili.bilibili
 
-import com.benyq.tikbili.api.RetrofitManager
-import com.benyq.tikbili.bilibili.model.BiliBiliResponse
-
 /**
  *
  * @author benyq

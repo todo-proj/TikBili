@@ -46,5 +46,5 @@ dependencies {
     //Exoplayer2
     implementation 'com.google.android.exoplayer:exoplayer:2.19.0'
     implementation(project(':player'))
-    compileOnly(project(':base'))
+    implementation(project(':base'))
 }

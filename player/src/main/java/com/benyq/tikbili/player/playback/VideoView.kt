@@ -28,6 +28,17 @@ class VideoView @JvmOverloads constructor(
 
     private val _displayModeHelper = DisplayModeHelper()
     private val _listeners = CopyOnWriteArrayList<VideoViewListener>()
+    private var _interceptDispatchClick = false
+
+    init {
+        setOnClickListener {
+            if (!_interceptDispatchClick) {
+                _listeners.forEach {
+                    it.onVideoViewClick(this)
+                }
+            }
+        }
+    }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -106,6 +117,12 @@ class VideoView @JvmOverloads constructor(
         }
     }
 
+    fun setInterceptDispatchClick(intercept: Boolean) {
+        _interceptDispatchClick = intercept
+    }
+
+    fun isInterceptDispatchClick() = _interceptDispatchClick
+
     fun startPlayback() {
         controller()?.startPlayback()
     }
@@ -147,6 +164,7 @@ class VideoView @JvmOverloads constructor(
         override fun onSurfaceDestroy(surface: Surface) {}
         override fun onSurfaceSizeChanged(surface: Surface, width: Int, height: Int) {}
         override fun onSurfaceUpdated(surface: Surface) {}
+        fun onVideoViewClick(videoView: VideoView) {}
     }
 
     override fun onSurfaceAvailable(surface: Surface, width: Int, height: Int) {
