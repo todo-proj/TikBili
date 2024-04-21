@@ -129,6 +129,14 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
         mSimpleExoPlayer.seekTo(progress)
     }
 
+    override fun isLooping(): Boolean {
+        return mSimpleExoPlayer.repeatMode == Player.REPEAT_MODE_ALL
+    }
+
+    override fun setSpeed(speed: Float) {
+        mSimpleExoPlayer.setPlaybackSpeed(speed)
+    }
+
     override fun setDataSource(mediaSource: MediaSource) {
         mMediaStore = mediaSource
     }

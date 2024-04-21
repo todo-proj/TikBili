@@ -2,12 +2,15 @@ package com.benyq.tikbili.player.playback
 
 import android.os.Looper
 import android.util.Log
-import com.benyq.tikbili.player.player.IPlayer
-import com.benyq.tikbili.player.dispather.EventDispatcher
+import android.view.Surface
+import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.dispather.Event
+import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.event.StateBindPlayer
+import com.benyq.tikbili.player.player.IPlayer
 import com.benyq.tikbili.player.player.IPlayerPool
 import java.lang.ref.WeakReference
+
 
 /**
  *
@@ -25,6 +28,8 @@ class PlaybackController(
     private var _player: IPlayer? = null
     private val _dispatcher = EventDispatcher(Looper.getMainLooper())
     private val _playEventListener = PlaybackEventListener(this)
+    private val _surfaceListener = SurfaceListener(this)
+    private var startOnReadyCommand: Runnable? = null
 
     fun bind(videoView: VideoView) {
         if (_videoView != null && videoView != _videoView) {
@@ -41,12 +46,14 @@ class PlaybackController(
     private fun bindVideoView(newVideoView: VideoView?) {
         if (_videoView == null && newVideoView != null) {
             _videoView = newVideoView
+            newVideoView.addVideoViewListener(_surfaceListener)
             newVideoView.bindController(this)
         }
 
     }
 
     private fun unbindVideoView() {
+        _videoView?.removeVideoViewListener(_surfaceListener)
         _videoView?.unbindController(this)
         _videoView = null
     }
@@ -60,7 +67,8 @@ class PlaybackController(
         }
     }
 
-    private fun unbindPlayer(recycle: Boolean = true) {
+    fun unbindPlayer(recycle: Boolean = true) {
+        startOnReadyCommand = null
         _player?.let {
             if (recycle) {
                 it.setSurface(null)
@@ -88,6 +96,7 @@ class PlaybackController(
     }
 
     fun startPlayback(startWhenPrepared: Boolean = true) {
+        startOnReadyCommand = null
         val attachedVideoView = _videoView ?: let {
             Log.e(tag, "startPlayback: videoView == null")
             return
@@ -113,6 +122,23 @@ class PlaybackController(
         // renderView 需要准备好
         if (isReady(_videoView)) {
             startPlayback(startWhenPrepared, attachedPlayer, attachedVideoView)
+        }else {
+            val surface = videoView()?.surface()
+            L.d(
+                this, if (startWhenPrepared) "startPlayback" else "preparePlayback",
+                "but resource not ready",
+                attachedPlayer,  // player not bind
+                attachedVideoView,  // view not bind
+                surface,  // surface not ready
+                surface // data source not bind
+            )
+            L.w(this, "startPlayback", surface)
+            // 等待回调启动
+            startOnReadyCommand = Runnable {
+                if (isReady(_videoView)) {
+                    startPlayback(startWhenPrepared, attachedPlayer, attachedVideoView)
+                }
+            }
         }
     }
 
@@ -151,6 +177,7 @@ class PlaybackController(
 
     fun stopPlayback() {
         _videoView?.setReuseSurface(false)
+        startOnReadyCommand = null
         unbindPlayer()
     }
 
@@ -179,4 +206,27 @@ class PlaybackController(
 
     }
 
+
+    class SurfaceListener(playbackController: PlaybackController): VideoView.VideoViewListener {
+
+        private val _weakRef = WeakReference(playbackController)
+
+        override fun onSurfaceAvailable(surface: Surface, width: Int, height: Int) {
+            val playbackController = _weakRef.get() ?: return
+            val startCommand = playbackController.startOnReadyCommand
+            if (startCommand != null) {
+                startCommand.run()
+            }else {
+                playbackController.player()?.setSurface(surface)
+            }
+        }
+
+        override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+            if (hasWindowFocus) {
+                val playbackController = _weakRef.get() ?: return
+                playbackController.player()?.setSurface(playbackController.videoView()?.surface())
+            }
+        }
+
+    }
 }

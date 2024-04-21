@@ -1,5 +1,6 @@
 package com.benyq.tikbili.scene.shortvideo.ui
 
+import android.app.ActivityOptions
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -12,6 +13,8 @@ import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.databinding.FragmentShortVideoBinding
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
+import com.benyq.tikbili.scene.HorizontalVideoActivity
+import com.benyq.tikbili.scene.HorizontalVideoContract
 import com.benyq.tikbili.scene.SceneEvent
 import com.benyq.tikbili.scene.shortvideo.event.ActionCommentVisible
 import com.benyq.tikbili.scene.shortvideo.ui.comment.ShortVideoCommentView
@@ -30,9 +33,13 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
 
     private val viewModel by viewModels<ShortVideoViewModel>()
     private var currentVid: String = ""
+    private val launcher = registerForActivityResult(HorizontalVideoContract()) {
+
+    }
 
     override fun onFragmentCreated(savedInstanceState: Bundle?) {
         val shortPageView = dataBind.shortPage
+        shortPageView.setLifeCycle(lifecycle)
         lifecycleScope.launch {
             viewModel.videoEvent.collect {
                 when (it) {
@@ -113,6 +120,11 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                         }
                         dataBind.shortPage.controller().dispatcher().obtain(ActionCommentVisible::class.java).init(false).dispatch()
                         dataBind.commentLayout.showComment()
+                    }
+                    SceneEvent.Action.THUMB_UP -> {
+                        val data = dataBind.shortPage.controller().player()?.getDataSource() ?: return
+                        HorizontalVideoActivity.startActivity(requireActivity(), data)
+                        requireActivity().overridePendingTransition(R.anim.enter_animation, R.anim.exit_animation);
                     }
                 }
             }

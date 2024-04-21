@@ -1,6 +1,7 @@
 package com.benyq.tikbili.player.playback
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.Surface
 import android.widget.FrameLayout
@@ -8,6 +9,7 @@ import com.benyq.tikbili.player.helper.DisplayModeHelper
 import com.benyq.tikbili.player.player.IPlayer
 import com.benyq.tikbili.player.source.MediaSource
 import java.util.concurrent.CopyOnWriteArrayList
+
 
 /**
  *
@@ -29,6 +31,7 @@ class VideoView @JvmOverloads constructor(
     private val _displayModeHelper = DisplayModeHelper()
     private val _listeners = CopyOnWriteArrayList<VideoViewListener>()
     private var _interceptDispatchClick = false
+    private var _hasWindowFocus = false
 
     init {
         setOnClickListener {
@@ -43,6 +46,16 @@ class VideoView @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         _displayModeHelper.apply()
+    }
+
+    override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+        super.onWindowFocusChanged(hasWindowFocus)
+        if (_hasWindowFocus != hasWindowFocus) {
+            _hasWindowFocus = hasWindowFocus
+            _listeners.forEach {
+                it.onWindowFocusChanged(hasWindowFocus)
+            }
+        }
     }
 
     fun bindLayerHost(layerHost: VideoLayerHost?) {
@@ -156,7 +169,13 @@ class VideoView @JvmOverloads constructor(
         return _displayView?.surface
     }
 
-    interface VideoViewListener: DisplayView.SurfaceListener {
+
+    interface ViewEventListener {
+        fun onConfigurationChanged(newConfig: Configuration?)
+        fun onWindowFocusChanged(hasWindowFocus: Boolean)
+    }
+
+    interface VideoViewListener: DisplayView.SurfaceListener, ViewEventListener {
         fun onVideoViewBindController(controller: PlaybackController) {}
         fun onVideoViewUnbindController(controller: PlaybackController) {}
         fun onVideoViewBindDataSource(dataSource: MediaSource) {}
@@ -165,6 +184,14 @@ class VideoView @JvmOverloads constructor(
         override fun onSurfaceSizeChanged(surface: Surface, width: Int, height: Int) {}
         override fun onSurfaceUpdated(surface: Surface) {}
         fun onVideoViewClick(videoView: VideoView) {}
+
+        override fun onConfigurationChanged(newConfig: Configuration?) {
+
+        }
+
+        override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+
+        }
     }
 
     override fun onSurfaceAvailable(surface: Surface, width: Int, height: Int) {

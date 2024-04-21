@@ -4,15 +4,18 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 import com.benyq.tikbili.base.ext.findItemViewByPosition
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.PlaybackController
-import com.benyq.tikbili.player.playback.PlaybackEvent
 import com.benyq.tikbili.player.playback.PlayerEvent
 import com.benyq.tikbili.player.playback.VideoView
-import com.benyq.tikbili.player.source.MediaSource
 
 /**
  *
@@ -24,12 +27,14 @@ class ShortVideoPageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-) : FrameLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr), DefaultLifecycleObserver {
 
     private val controller: PlaybackController = PlaybackController()
 
     private val viewPager: ViewPager2
     private val shortVideoAdapter: ShortVideoAdapter
+    private var _lifeCycle: Lifecycle? = null
+    private var _interceptStartPlaybackOnResume = false
 
     init {
         viewPager = ViewPager2(context)
@@ -91,5 +96,36 @@ class ShortVideoPageView @JvmOverloads constructor(
     fun currentItem(): ShortVideoModel? {
         val currentIndex = viewPager.currentItem
         return shortVideoAdapter.items().getOrNull(currentIndex)
+    }
+
+    fun setLifeCycle(lifecycle: Lifecycle) {
+        if (_lifeCycle != lifecycle) {
+            _lifeCycle?.removeObserver(this)
+            _lifeCycle = lifecycle
+        }
+        _lifeCycle?.addObserver(this)
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        if (!_interceptStartPlaybackOnResume) {
+            play()
+        }
+        _interceptStartPlaybackOnResume = false
+    }
+
+    override fun onPause(owner: LifecycleOwner) {
+        val player = controller.player()
+        if (player != null && (player.isPaused() || (!player.isLooping() && player.isCompleted()))) {
+            _interceptStartPlaybackOnResume = true
+        } else {
+            _interceptStartPlaybackOnResume = false
+            controller.pausePlayback()
+        }
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        _lifeCycle?.removeObserver(this)
+        _lifeCycle = null
+        controller.stopPlayback()
     }
 }

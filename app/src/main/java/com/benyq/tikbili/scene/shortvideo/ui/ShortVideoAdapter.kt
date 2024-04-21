@@ -83,6 +83,7 @@ class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
                 videoView.setupDisplayView()
                 videoView.setDisplayMode(DisplayModeHelper.DISPLAY_MODE_ASPECT_FIT)
                 videoView.setBackgroundColor(Color.BLACK)
+                videoView.transitionName = "video"
                 return videoView
             }
         }

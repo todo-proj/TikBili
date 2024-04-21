@@ -32,9 +32,15 @@ object L {
         }
     }
 
-    fun d(o: Any, method: String, vararg args: Any) {
+    fun d(o: Any, method: String, vararg args: Any?) {
         if (ENABLE_LOG) {
             Log.d(TAG, createLog(o, method, *args))
+        }
+    }
+
+    fun w(o: Any, method: String, vararg args: Any?) {
+        if (ENABLE_LOG) {
+            Log.w(TAG, createLog(o, method, *args))
         }
     }
 

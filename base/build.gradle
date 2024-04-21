@@ -63,7 +63,7 @@ dependencies {
     //mmkv
     api 'com.tencent:mmkv:1.3.4'
     //https://github.com/bytedance/CodeLocator
-    api "com.bytedance.tools.codelocator:codelocator-core:2.0.3"
+    api "com.bytedance.tools.codelocator:codelocator-core:2.0.4"
     // https://github.com/CymChad/BaseRecyclerViewAdapterHelper
     api "io.github.cymchad:BaseRecyclerViewAdapterHelper:4.0.0"
 

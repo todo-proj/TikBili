@@ -48,7 +48,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
                 startId: Int,
                 endId: Int,
             ) {
-//                viewModel.checkLogin()
+                viewModel.checkLogin()
                 isMotionRunning = true
             }
 
@@ -62,7 +62,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
 
             override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
                 isMotionRunning = false
-                waitLaunch(Intent(this@SplashActivity, MainActivity::class.java))
             }
 
             override fun onTransitionTrigger(
