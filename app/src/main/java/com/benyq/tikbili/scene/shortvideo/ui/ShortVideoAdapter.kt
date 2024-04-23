@@ -9,13 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.benyq.tikbili.player.helper.DisplayModeHelper
 import com.benyq.tikbili.player.playback.VideoLayerHost
 import com.benyq.tikbili.player.playback.VideoView
-import com.benyq.tikbili.scene.layer.FeedRightLayer
+import com.benyq.tikbili.scene.shortvideo.layer.FeedRightLayer
 import com.benyq.tikbili.player.playback.layer.PauseLayer
-import com.benyq.tikbili.player.playback.layer.ShortVideoCoverLayer
+import com.benyq.tikbili.scene.shortvideo.layer.ShortVideoCoverLayer
 import com.benyq.tikbili.player.playback.layer.SimpleProgressBarLayer
 import com.benyq.tikbili.player.source.MediaSource
+import com.benyq.tikbili.scene.shortvideo.layer.FullScreenLayer
+import com.benyq.tikbili.scene.shortvideo.layer.ShortVideoProgressBarLayer
 import com.benyq.tikbili.utils.StringUtils
-import java.net.URLDecoder
 
 /**
  *
@@ -76,8 +77,9 @@ class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
                 val layerHost = VideoLayerHost(context)
                 layerHost.addLayer(ShortVideoCoverLayer())
                 layerHost.addLayer(PauseLayer())
+                layerHost.addLayer(FullScreenLayer())
                 layerHost.addLayer(FeedRightLayer())
-                layerHost.addLayer(SimpleProgressBarLayer())
+                layerHost.addLayer(ShortVideoProgressBarLayer())
 
                 layerHost.attachToVideoView(videoView)
                 videoView.setupDisplayView()

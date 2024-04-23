@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.Surface
+import android.view.View
 import android.widget.FrameLayout
 import com.benyq.tikbili.player.helper.DisplayModeHelper
 import com.benyq.tikbili.player.player.IPlayer
@@ -169,6 +170,9 @@ class VideoView @JvmOverloads constructor(
         return _displayView?.surface
     }
 
+    fun displayView(): View? {
+        return _displayView?.displayView
+    }
 
     interface ViewEventListener {
         fun onConfigurationChanged(newConfig: Configuration?)

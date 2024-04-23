@@ -16,6 +16,8 @@ interface SceneEvent {
             const val COLLECT = 104
             const val SHARE = 105
             const val COMMENT_VISIBLE = 106
+            const val FULLSCREEN = 107
+            const val PROGRESS_BAR = 108
         }
     }
 }

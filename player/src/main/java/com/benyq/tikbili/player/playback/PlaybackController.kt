@@ -7,6 +7,7 @@ import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.event.StateBindPlayer
+import com.benyq.tikbili.player.playback.event.StateBindVideoView
 import com.benyq.tikbili.player.player.IPlayer
 import com.benyq.tikbili.player.player.IPlayerPool
 import java.lang.ref.WeakReference
@@ -48,6 +49,7 @@ class PlaybackController(
             _videoView = newVideoView
             newVideoView.addVideoViewListener(_surfaceListener)
             newVideoView.bindController(this)
+            _dispatcher.obtain(StateBindVideoView::class.java).dispatch()
         }
 
     }

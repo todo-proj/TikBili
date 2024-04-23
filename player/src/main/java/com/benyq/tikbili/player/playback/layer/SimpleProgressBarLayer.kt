@@ -49,10 +49,6 @@ class SimpleProgressBarLayer: AnimateLayer() {
                 }
             }
         })
-
-        view.findViewById<ImageView>(R.id.fullScreen).setOnClickListener {
-
-        }
         return view
     }
 

@@ -121,7 +121,8 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                         dataBind.shortPage.controller().dispatcher().obtain(ActionCommentVisible::class.java).init(false).dispatch()
                         dataBind.commentLayout.showComment()
                     }
-                    SceneEvent.Action.THUMB_UP -> {
+                    SceneEvent.Action.THUMB_UP -> {}
+                    SceneEvent.Action.FULLSCREEN -> {
                         val data = dataBind.shortPage.controller().player()?.getDataSource() ?: return
                         HorizontalVideoActivity.startActivity(requireActivity(), data)
                         requireActivity().overridePendingTransition(R.anim.enter_animation, R.anim.exit_animation);

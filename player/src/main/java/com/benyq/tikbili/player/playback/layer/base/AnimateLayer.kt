@@ -91,7 +91,7 @@ abstract class AnimateLayer : VideoLayer() {
     fun animateDismiss(
         startDelay: Long = 0,
         duration: Long = DEFAULT_ANIMATE_DURATION,
-        showListener: Animator.AnimatorListener? = null,
+        dismissListener: Animator.AnimatorListener? = null,
     ) {
         removeDismissRunnable()
         when (_state) {
@@ -131,8 +131,8 @@ abstract class AnimateLayer : VideoLayer() {
 
         })
         _animator.start()
-        if (showListener != null) {
-            _animator.addListener(showListener)
+        if (dismissListener != null) {
+            _animator.addListener(dismissListener)
         }
         setState(State.DISMISSING)
     }

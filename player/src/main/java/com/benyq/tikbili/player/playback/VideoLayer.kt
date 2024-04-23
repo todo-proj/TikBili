@@ -16,7 +16,7 @@ import com.benyq.tikbili.player.source.MediaSource
  */
 abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLayerHostListener {
 
-    private var _layerView: View? = null
+    protected var _layerView: View? = null
     private var _layerHost: VideoLayerHost? = null
     abstract val tag: String
 

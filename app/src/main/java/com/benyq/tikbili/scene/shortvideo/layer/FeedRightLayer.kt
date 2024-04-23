@@ -1,4 +1,4 @@
-package com.benyq.tikbili.scene.layer
+package com.benyq.tikbili.scene.shortvideo.layer
 
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +16,7 @@ import com.benyq.tikbili.scene.SceneEvent
 import com.benyq.tikbili.scene.shortvideo.event.ActionComment
 import com.benyq.tikbili.scene.shortvideo.event.ActionCommentVisible
 import com.benyq.tikbili.scene.shortvideo.event.ActionThumbUp
+import com.benyq.tikbili.scene.shortvideo.event.ActionTrackProgressBar
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -116,6 +117,13 @@ class FeedRightLayer : VideoLayer() {
                         show()
                     }else {
                         hide()
+                    }
+                }
+                SceneEvent.Action.PROGRESS_BAR -> {
+                    if (event.cast(ActionTrackProgressBar::class.java).isTracking) {
+                        hide()
+                    }else {
+                        show()
                     }
                 }
             }
