@@ -12,7 +12,6 @@ import com.benyq.tikbili.scene.shortvideo.ui.ShortVideoFragment
 import com.benyq.tikbili.ui.base.BaseActivity
 import com.benyq.tikbili.ui.base.mvi.extension.collectSingleEvent
 import com.benyq.tikbili.ui.base.mvi.extension.collectState
-import com.benyq.tikbili.ui.video.FragmentVideoContainer
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
@@ -22,7 +21,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         systemBarColor(Color.BLACK)
-//        showFragment("Video")
         showFragment("ShortVideo")
         viewModel.mainContainer.uiStateFlow.collectState(this) {
 
@@ -39,11 +37,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             currentFragment?.let { fragment -> it.hide(fragment) }
             val showFragment: Fragment? =
                 supportFragmentManager.findFragmentByTag(tag) ?: when (tag) {
-                    "Video" -> {
-                        FragmentVideoContainer().apply {
-                            it.add(R.id.fl_container, this, tag)
-                        }
-                    }
                     "ShortVideo" -> {
                         ShortVideoFragment().apply {
                             it.add(R.id.fl_container, this, tag)

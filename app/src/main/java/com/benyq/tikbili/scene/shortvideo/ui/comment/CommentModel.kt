@@ -1,6 +1,7 @@
 package com.benyq.tikbili.scene.shortvideo.ui.comment
 
 import android.content.Context
+import android.text.Spanned
 import com.benyq.tikbili.bilibili.CommentMessageFormatter
 import com.benyq.tikbili.bilibili.model.VideoReplyModel
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -22,12 +23,6 @@ data class CommentModel(
         const val TYPE_EXPAND = 2
     }
 
-    var formatMessage: CharSequence = reply.content.message
+    var formatMessage: Spanned? = null
         private set
-
-    suspend fun formatMessage(context: Context) {
-        withTimeout(2000) {
-            formatMessage = CommentMessageFormatter.formatMessage(context, reply.content.message, reply.content.emote)
-        }
-    }
 }

@@ -1,7 +1,11 @@
 package com.benyq.tikbili.scene.shortvideo.ui
 
-import android.app.ActivityOptions
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.Html
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -14,13 +18,15 @@ import com.benyq.tikbili.databinding.FragmentShortVideoBinding
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.scene.HorizontalVideoActivity
-import com.benyq.tikbili.scene.HorizontalVideoContract
 import com.benyq.tikbili.scene.SceneEvent
 import com.benyq.tikbili.scene.shortvideo.event.ActionCommentVisible
 import com.benyq.tikbili.scene.shortvideo.ui.comment.ShortVideoCommentView
 import com.benyq.tikbili.ui.base.BaseFragment
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.abs
 
 /**
@@ -33,9 +39,6 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
 
     private val viewModel by viewModels<ShortVideoViewModel>()
     private var currentVid: String = ""
-    private val launcher = registerForActivityResult(HorizontalVideoContract()) {
-
-    }
 
     override fun onFragmentCreated(savedInstanceState: Bundle?) {
         val shortPageView = dataBind.shortPage
@@ -67,10 +70,15 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                     }
 
                     is DataState.Success -> {
-                        dataBind.commentLayout.submitComment(it.data)
+                        if (it.data.isFirst) {
+                            dataBind.commentLayout.submitComment(it.data.data)
+                        }else {
+                            dataBind.commentLayout.appendComment(it.data.data, it.data.isEnd)
+                        }
                     }
 
                     is DataState.Error -> {
+                        dataBind.commentLayout.failLoad(it.error)
                         L.e(this@ShortVideoFragment, "commentEvent collect", "error", it.error?.message)
                     }
                 }
@@ -80,6 +88,7 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
         dataBind.commentLayout.setOnCommentEventListener(object : ShortVideoCommentView.OnCommentEventListener {
 
             override fun loadMoreComments() {
+                viewModel.queryVideoReply(currentVid)
             }
 
             override fun loadReplyComments(id: String) {
@@ -116,7 +125,7 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                         if (currentItem.id != currentVid) {
                             dataBind.commentLayout.resetComment()
                             currentVid = currentItem.id
-                            viewModel.queryVideoReply(currentItem.id)
+                            viewModel.queryVideoReply(currentItem.id, true)
                         }
                         dataBind.shortPage.controller().dispatcher().obtain(ActionCommentVisible::class.java).init(false).dispatch()
                         dataBind.commentLayout.showComment()
@@ -132,4 +141,12 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
         })
     }
 
+
+    override fun onBackPressed(): Boolean {
+        if (dataBind.commentLayout.isShowing()) {
+            dataBind.commentLayout.hideComment()
+            return true
+        }
+        return false
+    }
 }

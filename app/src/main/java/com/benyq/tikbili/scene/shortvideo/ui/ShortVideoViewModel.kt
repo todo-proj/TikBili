@@ -3,6 +3,7 @@ package com.benyq.tikbili.scene.shortvideo.ui
 import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.benyq.tikbili.base.ui.DataState
+import com.benyq.tikbili.base.ui.PageDataModel
 import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.bilibili.BiliRemoteRepository
 import com.benyq.tikbili.scene.shortvideo.ui.comment.CommentModel
@@ -28,7 +29,7 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
     private val _videoEvent = MutableSharedFlow<DataState<List<ShortVideoModel>>>()
     val videoEvent = _videoEvent.asSharedFlow()
 
-    private val _commentEvent = MutableSharedFlow<DataState<List<CommentModel>>>()
+    private val _commentEvent = MutableSharedFlow<DataState<PageDataModel<List<CommentModel>>>>()
     val commentEvent = _commentEvent.asSharedFlow()
 
     fun getRecommend() {
@@ -58,8 +59,12 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
             }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
     }
 
-    fun queryVideoReply(oid: String) {
-        flowResponse { repository.videoReply(oid, 1) }
+    private var currentIndex = 1
+    fun queryVideoReply(oid: String, refresh: Boolean = false) {
+        if (refresh) {
+            currentIndex = 1
+        }
+        flowResponse { repository.videoReply(oid, currentIndex) }
             .onEach {
                 val data = it.map {
                     val result = mutableListOf<CommentModel>()
@@ -69,14 +74,9 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
                             result.add(CommentModel(CommentModel.TYPE_CHILD, childReply))
                         }
                     }
-                    L.d(this@ShortVideoViewModel, "queryVideoReply", "prepare tasks")
-                    result.forEach { model ->
-                        model.formatMessage(getApplication())
-                    }
-                    L.d(this@ShortVideoViewModel, "queryVideoReply", "done tasks")
-                    result.toList().apply {
-                        L.d(this@ShortVideoViewModel, "queryVideoReply", "return result")
-                    }
+                    currentIndex++
+                    val replies = result.toList()
+                    PageDataModel(replies, refresh, replies.isEmpty())
                 }
                 _commentEvent.emit(data)
             }.flowOn(Dispatchers.IO).launchIn(viewModelScope)

@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import com.benyq.tikbili.R
 import com.benyq.tikbili.base.ext.px
+import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.PlaybackController
@@ -37,6 +38,7 @@ class FullScreenLayer: VideoLayer() {
             val topOffset = it.height + it.top
             layoutParams.topMargin = topOffset + 15.px
         }
+        L.d(this, "onCreateLayerView", "topMargin", layoutParams.topMargin)
         view.layoutParams = layoutParams
         view.setOnClickListener {
             controller()?.dispatcher()?.obtain(ActionFullScreen::class.java)?.dispatch()

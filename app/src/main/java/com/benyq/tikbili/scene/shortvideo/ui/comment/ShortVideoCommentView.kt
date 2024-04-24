@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.benyq.tikbili.base.ext.px
 import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.databinding.ViewShortVideoCommentBinding
+import com.chad.library.adapter4.QuickAdapterHelper
+import com.chad.library.adapter4.loadState.LoadState
+import com.chad.library.adapter4.loadState.trailing.TrailingLoadStateAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 /**
@@ -31,6 +34,7 @@ class ShortVideoCommentView @JvmOverloads constructor(
     private val adapter by lazy { ShortVideoCommentAdapter {
 
     } }
+    private lateinit var adapterHelper: QuickAdapterHelper
     private val bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     fun setOnCommentEventListener(commentClickListener: OnCommentEventListener) {
@@ -44,7 +48,21 @@ class ShortVideoCommentView @JvmOverloads constructor(
         }
 
         binding.rvComments.layoutManager = LinearLayoutManager(context)
-        binding.rvComments.adapter = adapter
+        adapterHelper = QuickAdapterHelper.Builder(adapter)
+            .setTrailingLoadStateAdapter(object: TrailingLoadStateAdapter.OnTrailingListener {
+                override fun onFailRetry() {
+                    _commentListener?.loadMoreComments()
+                }
+                override fun onLoad() {
+                    _commentListener?.loadMoreComments()
+                }
+
+                override fun isAllowLoading(): Boolean {
+                    return super.isAllowLoading()
+                }
+            })
+            .build()
+        binding.rvComments.adapter = adapterHelper.adapter
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.clBottomSheet)
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -72,10 +90,21 @@ class ShortVideoCommentView @JvmOverloads constructor(
 
     fun submitComment(data: List<CommentModel>) {
         adapter.submitList(data)
+        adapterHelper.trailingLoadState = LoadState.NotLoading(false)
     }
 
-    fun appendComment(data: List<CommentModel>) {
+    fun appendComment(data: List<CommentModel>, isEnd: Boolean) {
         adapter.addAll(data)
+        adapterHelper.trailingLoadState = LoadState.NotLoading(isEnd)
+    }
+
+    fun failLoad(throwable: Throwable?) {
+        if (throwable == null) return
+        if (adapter.itemCount == 0) {
+            //TODO 显示 error message
+        }else {
+            adapterHelper.trailingLoadState = LoadState.Error(throwable)
+        }
     }
 
     fun addReplyComment(id: String, data: List<CommentModel>) {
@@ -83,12 +112,18 @@ class ShortVideoCommentView @JvmOverloads constructor(
     }
 
     fun showLoading() {
-        binding.loading.isVisible = true
+        if (adapter.itemCount == 0) {
+            binding.loading.isVisible = true
+        }else {
+            adapterHelper.trailingLoadState = LoadState.Loading
+        }
     }
 
     fun dismissLoading() {
-        binding.loading.endLoading()
-        binding.loading.isVisible = false
+        if (binding.loading.isVisible) {
+            binding.loading.endLoading()
+            binding.loading.isVisible = false
+        }
     }
 
     fun showComment() {
@@ -98,14 +133,19 @@ class ShortVideoCommentView @JvmOverloads constructor(
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
+    fun isShowing(): Boolean {
+        return isVisible || bottomSheetBehavior.state <= BottomSheetBehavior.STATE_COLLAPSED
+    }
+
     /**
      * 重置评论页面，移除评论
      */
     fun resetComment() {
         adapter.submitList(emptyList())
+        adapterHelper.trailingLoadState = LoadState.None
     }
 
-    private fun hideComment() {
+    fun hideComment() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 

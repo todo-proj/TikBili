@@ -22,26 +22,14 @@ import com.benyq.tikbili.player.playback.layer.SimpleProgressBarLayer
 import com.benyq.tikbili.player.source.MediaSource
 import com.benyq.tikbili.ui.base.BaseActivity
 
-
-class HorizontalVideoContract: ActivityResultContract<MediaSource, String>() {
-
-    override fun createIntent(context: Context, input: MediaSource): Intent {
-        return Intent(context, HorizontalVideoActivity::class.java).apply {
-            putExtra(HorizontalVideoActivity.EXTRA_TAG, input)
-        }
-    }
-
-    override fun parseResult(resultCode: Int, intent: Intent?): String {
-        return ""
-    }
-
-}
-
-
+/**
+ * @author benyq
+ * @date 4/24/2024
+ */
 class HorizontalVideoActivity : BaseActivity<ActivityHorizontalVideoBinding>() {
 
     companion object {
-        const val EXTRA_TAG = "mediaSource"
+        private const val EXTRA_TAG = "mediaSource"
         fun startActivity(context: Context, mediaSource: MediaSource) {
             context.startActivity(Intent(context, HorizontalVideoActivity::class.java).apply {
                 putExtra(EXTRA_TAG, mediaSource)
