@@ -17,6 +17,7 @@ object L {
             o == null -> null
             o is String -> o
             o is Number -> o.toString()
+            o is Boolean -> o.toString()
             o.javaClass.isAnonymousClass -> {
                 val s = o.toString()
                 s.substring(s.lastIndexOf('.'))

@@ -30,7 +30,6 @@ class CommentMessageFormatter {
             return Html.fromHtml(newMessage, { source ->
                 val file = Glide.with(context).load(source).downloadOnly(40, 40).get()
                 val drawable = Drawable.createFromPath(file.absolutePath)
-//                drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
                 drawable?.setBounds(0, 0, size, size)
                 drawable
             }, null)

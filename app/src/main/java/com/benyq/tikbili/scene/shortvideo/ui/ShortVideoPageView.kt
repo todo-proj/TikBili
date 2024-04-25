@@ -6,8 +6,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 import com.benyq.tikbili.base.ext.findItemViewByPosition
@@ -16,6 +14,7 @@ import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.PlaybackController
 import com.benyq.tikbili.player.playback.PlayerEvent
 import com.benyq.tikbili.player.playback.VideoView
+import com.benyq.tikbili.scene.VideoItem
 
 /**
  *
@@ -35,6 +34,7 @@ class ShortVideoPageView @JvmOverloads constructor(
     private val shortVideoAdapter: ShortVideoAdapter
     private var _lifeCycle: Lifecycle? = null
     private var _interceptStartPlaybackOnResume = false
+    private var _onPageChangeCallback: OnPageSelectedListener? = null
 
     init {
         viewPager = ViewPager2(context)
@@ -44,6 +44,7 @@ class ShortVideoPageView @JvmOverloads constructor(
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 togglePlayback(position)
+                _onPageChangeCallback?.onPageSelected(position)
             }
         })
         addView(viewPager, LayoutParams(
@@ -61,7 +62,7 @@ class ShortVideoPageView @JvmOverloads constructor(
         })
     }
 
-    fun setItems(items: List<ShortVideoModel>) {
+    fun setItems(items: List<VideoItem>) {
         shortVideoAdapter.setItems(items)
         viewPager.getChildAt(0).post { this.play() }
     }
@@ -93,7 +94,7 @@ class ShortVideoPageView @JvmOverloads constructor(
         return controller
     }
 
-    fun currentItem(): ShortVideoModel? {
+    fun currentItem(): VideoItem? {
         val currentIndex = viewPager.currentItem
         return shortVideoAdapter.items().getOrNull(currentIndex)
     }
@@ -104,6 +105,10 @@ class ShortVideoPageView @JvmOverloads constructor(
             _lifeCycle = lifecycle
         }
         _lifeCycle?.addObserver(this)
+    }
+
+    fun setOnPageChangeCallback(listener: OnPageSelectedListener) {
+        _onPageChangeCallback = listener
     }
 
     override fun onResume(owner: LifecycleOwner) {
@@ -127,5 +132,9 @@ class ShortVideoPageView @JvmOverloads constructor(
         _lifeCycle?.removeObserver(this)
         _lifeCycle = null
         controller.stopPlayback()
+    }
+
+    fun interface OnPageSelectedListener {
+        fun onPageSelected(position: Int)
     }
 }

@@ -28,6 +28,7 @@ import com.benyq.tikbili.scene.shortvideo.event.ActionTrackProgressBar
  */
 class FullScreenLayer: VideoLayer() {
     override val tag: String = "FullScreenLayer"
+    private var isInterceptShow = false
 
     override fun onCreateLayerView(parent: ViewGroup): View {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.video_full_screen_layer, parent, false)
@@ -55,6 +56,7 @@ class FullScreenLayer: VideoLayer() {
     }
 
     override fun show() {
+        if (isInterceptShow) return
         val dataSource = dataSource() ?: return
         if (dataSource.displayAspectRatio < 1f) return
         super.show()
@@ -67,14 +69,18 @@ class FullScreenLayer: VideoLayer() {
                     show()
                 }
                 SceneEvent.Action.PROGRESS_BAR -> {
-                    if (event.cast(ActionTrackProgressBar::class.java).isTracking) {
+                    val isTracking = event.cast(ActionTrackProgressBar::class.java).isTracking
+                    isInterceptShow = isTracking
+                    if (isTracking) {
                         hide()
                     }else {
                         show()
                     }
                 }
                 SceneEvent.Action.COMMENT_VISIBLE -> {
-                    if (event.cast(ActionCommentVisible::class.java).visible) {
+                    val visible = event.cast(ActionCommentVisible::class.java).visible
+                    isInterceptShow = visible
+                    if (!visible) {
                         show()
                     }else {
                         hide()

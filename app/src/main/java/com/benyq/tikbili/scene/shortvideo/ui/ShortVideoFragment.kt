@@ -1,11 +1,6 @@
 package com.benyq.tikbili.scene.shortvideo.ui
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.text.Html
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -22,11 +17,8 @@ import com.benyq.tikbili.scene.SceneEvent
 import com.benyq.tikbili.scene.shortvideo.event.ActionCommentVisible
 import com.benyq.tikbili.scene.shortvideo.ui.comment.ShortVideoCommentView
 import com.benyq.tikbili.ui.base.BaseFragment
-import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.abs
 
 /**
@@ -97,7 +89,7 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
 
             override fun changedState(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    dataBind.shortPage.controller().dispatcher().obtain(ActionCommentVisible::class.java).init(true).dispatch()
+                    dataBind.shortPage.controller().dispatcher().obtain(ActionCommentVisible::class.java).init(false).dispatch()
                 }
             }
 
@@ -121,13 +113,8 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                 when (event.code) {
                     SceneEvent.Action.COMMENT -> {
                         L.d(this@ShortVideoFragment, "onEvent", event.code)
-                        val currentItem = dataBind.shortPage.currentItem() ?: return
-                        if (currentItem.id != currentVid) {
-                            dataBind.commentLayout.resetComment()
-                            currentVid = currentItem.id
-                            viewModel.queryVideoReply(currentItem.id, true)
-                        }
-                        dataBind.shortPage.controller().dispatcher().obtain(ActionCommentVisible::class.java).init(false).dispatch()
+                        viewModel.queryVideoReply(currentVid, true)
+                        dataBind.shortPage.controller().dispatcher().obtain(ActionCommentVisible::class.java).init(true).dispatch()
                         dataBind.commentLayout.showComment()
                     }
                     SceneEvent.Action.THUMB_UP -> {}
@@ -139,6 +126,11 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                 }
             }
         })
+        dataBind.shortPage.setOnPageChangeCallback {
+            dataBind.commentLayout.resetComment()
+            val currentItem = dataBind.shortPage.currentItem() ?: return@setOnPageChangeCallback
+            currentVid = currentItem.id
+        }
     }
 
 

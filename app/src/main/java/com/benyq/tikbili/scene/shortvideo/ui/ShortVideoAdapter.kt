@@ -12,11 +12,9 @@ import com.benyq.tikbili.player.playback.VideoView
 import com.benyq.tikbili.scene.shortvideo.layer.FeedRightLayer
 import com.benyq.tikbili.player.playback.layer.PauseLayer
 import com.benyq.tikbili.scene.shortvideo.layer.ShortVideoCoverLayer
-import com.benyq.tikbili.player.playback.layer.SimpleProgressBarLayer
-import com.benyq.tikbili.player.source.MediaSource
+import com.benyq.tikbili.scene.VideoItem
 import com.benyq.tikbili.scene.shortvideo.layer.FullScreenLayer
 import com.benyq.tikbili.scene.shortvideo.layer.ShortVideoProgressBarLayer
-import com.benyq.tikbili.utils.StringUtils
 
 /**
  *
@@ -26,10 +24,10 @@ import com.benyq.tikbili.utils.StringUtils
  */
 class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
 
-    private val _items = mutableListOf<ShortVideoModel>()
+    private val _items = mutableListOf<VideoItem>()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(items: List<ShortVideoModel>) {
+    fun setItems(items: List<VideoItem>) {
         _items.clear()
         _items.addAll(items)
         notifyDataSetChanged()
@@ -98,8 +96,8 @@ class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
             )
         }
 
-        fun bind(model: ShortVideoModel) {
-            val mediaSource = toMediaSource(model)
+        fun bind(model: VideoItem) {
+            val mediaSource = VideoItem.toMediaSource(model)
             val currentSource = videoView.dataSource()
             if (currentSource == null) {
                 videoView.bindDataSource(mediaSource)
@@ -115,31 +113,6 @@ class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
                 }
             }
         }
-
-        private fun toMediaSource(model: ShortVideoModel): MediaSource {
-            val bvid = model.videoDetail.bvid
-            val videoDetail = model.videoDetail
-            return MediaSource(
-                bvid,
-                model.videoUrl,
-                videoDetail.pic,
-                videoDetail.dimension.width,
-                videoDetail.dimension.height,
-                MediaSource.Stat(
-                    StringUtils.num2String(videoDetail.stat.like),
-                    StringUtils.num2String(videoDetail.stat.coin),
-                    StringUtils.num2String(videoDetail.stat.reply),
-                    StringUtils.num2String(videoDetail.stat.favorite),
-                    StringUtils.num2String(videoDetail.stat.share)
-                ),
-                MediaSource.Poster(
-                    videoDetail.owner.face,
-                    videoDetail.owner.mid,
-                    videoDetail.owner.name
-                )
-            )
-        }
-
     }
 
 }

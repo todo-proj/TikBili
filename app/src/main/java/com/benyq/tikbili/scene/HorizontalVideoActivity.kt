@@ -44,7 +44,7 @@ class HorizontalVideoActivity : BaseActivity<ActivityHorizontalVideoBinding>() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         fullScreen(true)
 
-        val mediaSource: MediaSource = intent.getParcelableExtra(EXTRA_TAG) ?: let {
+        val mediaSource: MediaSource = intent.getSerializableExtra(EXTRA_TAG) as? MediaSource ?: let {
             finish()
             return
         }

@@ -4,10 +4,11 @@ import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.benyq.tikbili.base.ui.DataState
 import com.benyq.tikbili.base.ui.PageDataModel
-import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.bilibili.BiliRemoteRepository
+import com.benyq.tikbili.scene.VideoItem
 import com.benyq.tikbili.scene.shortvideo.ui.comment.CommentModel
 import com.benyq.tikbili.ui.base.BaseViewModel
+import com.benyq.tikbili.utils.StringUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -26,7 +27,7 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
 
     private val repository = BiliRemoteRepository()
 
-    private val _videoEvent = MutableSharedFlow<DataState<List<ShortVideoModel>>>()
+    private val _videoEvent = MutableSharedFlow<DataState<List<VideoItem>>>()
     val videoEvent = _videoEvent.asSharedFlow()
 
     private val _commentEvent = MutableSharedFlow<DataState<PageDataModel<List<CommentModel>>>>()
@@ -37,18 +38,32 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
             .onEach {
                 val data = it.map { videoData ->
                     val items = videoData.item.slice(0 until 5)
-                    val result = mutableListOf<ShortVideoModel>()
+                    val result = mutableListOf<VideoItem>()
                     items.forEach { model ->
                         kotlin.runCatching {
                             val videoDetail = repository.videoInfo(model.bvid).getRealData()
                             val data = repository.videoUrl(model.bvid, model.cid).getRealData()
                             val durl = data.durl.first()
                             result.add(
-                                ShortVideoModel(
-                                    model.id,
-                                    model,
-                                    videoDetail,
-                                    URLDecoder.decode(durl.url, "utf-8")
+                                VideoItem(
+                                    videoDetail.bvid,
+                                    videoDetail.title,
+                                    videoDetail.pic,
+                                    URLDecoder.decode(durl.url, "utf-8"),
+                                    videoDetail.dimension.width,
+                                    videoDetail.dimension.height,
+                                    VideoItem.Stat(
+                                        StringUtils.num2String(videoDetail.stat.like),
+                                        StringUtils.num2String(videoDetail.stat.coin),
+                                        StringUtils.num2String(videoDetail.stat.reply),
+                                        StringUtils.num2String(videoDetail.stat.favorite),
+                                        StringUtils.num2String(videoDetail.stat.share)
+                                    ),
+                                    VideoItem.Poster(
+                                        videoDetail.owner.face,
+                                        videoDetail.owner.mid,
+                                        videoDetail.owner.name
+                                    )
                                 )
                             )
                         }

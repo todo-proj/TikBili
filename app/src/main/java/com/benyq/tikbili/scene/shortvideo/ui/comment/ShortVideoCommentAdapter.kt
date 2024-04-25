@@ -16,6 +16,7 @@ import com.chad.library.adapter4.BaseMultiItemAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -105,6 +106,11 @@ class ShortVideoCommentAdapter(private val action: (VideoReplyModel.Reply)->Unit
             jobs[holder]?.cancel()
             jobs.remove(holder)
         }
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        scope.cancel()
     }
 
     private fun getHeight(paint: Paint): Float {

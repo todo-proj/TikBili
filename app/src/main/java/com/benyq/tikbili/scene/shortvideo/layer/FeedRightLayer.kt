@@ -1,5 +1,6 @@
 package com.benyq.tikbili.scene.shortvideo.layer
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import com.benyq.tikbili.scene.shortvideo.event.ActionComment
 import com.benyq.tikbili.scene.shortvideo.event.ActionCommentVisible
 import com.benyq.tikbili.scene.shortvideo.event.ActionThumbUp
 import com.benyq.tikbili.scene.shortvideo.event.ActionTrackProgressBar
+import com.benyq.tikbili.scene.VideoItem
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -42,6 +44,9 @@ class FeedRightLayer : VideoLayer() {
     private var llCoin: View? = null
     private var llStar: View? = null
     private var llShare: View? = null
+
+    private var tvPoster: TextView? = null
+    private var tvTitle: TextView? = null
 
     override fun onCreateLayerView(parent: ViewGroup): View {
         val view = LayoutInflater.from(parent.context)
@@ -73,6 +78,10 @@ class FeedRightLayer : VideoLayer() {
         }
         ivAvatar = view.findViewById(R.id.iv_avatar)
         ivAddOwner = view.findViewById(R.id.iv_add)
+
+
+        tvPoster = view.findViewById(R.id.tv_poster)
+        tvTitle = view.findViewById(R.id.tv_title)
         return view
     }
 
@@ -93,17 +102,21 @@ class FeedRightLayer : VideoLayer() {
         updateVideoInfo()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateVideoInfo() {
         val dataSource = dataSource() ?: return
-        tvThumbUp?.text = dataSource.stat.like
-        tvReply?.text = dataSource.stat.reply
-        tvCoin?.text = dataSource.stat.coin
-        tvStar?.text = dataSource.stat.favorite
-        tvShare?.text = dataSource.stat.share
+        val videoItem = VideoItem.get(dataSource) ?: return
+        tvThumbUp?.text = videoItem.stat.like
+        tvReply?.text = videoItem.stat.reply
+        tvCoin?.text = videoItem.stat.coin
+        tvStar?.text = videoItem.stat.favorite
+        tvShare?.text = videoItem.stat.share
         ivAvatar?.let {
             val option = RequestOptions().centerCrop()
-            Glide.with(it).load(dataSource.poster.avatar).apply(option).into(it)
+            Glide.with(it).load(videoItem.poster.avatar).apply(option).into(it)
         }
+        tvPoster?.text = "@${videoItem.poster.nickName}"
+        tvTitle?.text = videoItem.title
     }
 
     private val listener = object : EventDispatcher.EventListener {
@@ -113,7 +126,7 @@ class FeedRightLayer : VideoLayer() {
                     show()
                 }
                 SceneEvent.Action.COMMENT_VISIBLE -> {
-                    if (event.cast(ActionCommentVisible::class.java).visible) {
+                    if (!event.cast(ActionCommentVisible::class.java).visible) {
                         show()
                     }else {
                         hide()
