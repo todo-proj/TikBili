@@ -11,7 +11,7 @@ import java.util.Collections
  * @date 4/25/2024
  *
  */
-open class ExtraObject {
+open class ExtraObject: Serializable {
     private val _extras = Collections.synchronizedMap(LinkedHashMap<String, Any>())
 
     fun <T> getExtra(key: String, clazz: Class<T>): T? {

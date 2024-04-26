@@ -2,6 +2,7 @@ package com.benyq.tikbili
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.ExoPlayerFactory
 import com.benyq.tikbili.player.player.IPlayer
@@ -30,5 +31,7 @@ class TikBiliApp: Application() {
         MMKV.initialize(this)
         IPlayer.Factory.Default.set(ExoPlayerFactory(this))
         StartLogHelper.getApplicationTime()
+
+        Log.d("TAG", "onCreate: ${resources.displayMetrics.widthPixels}-${resources.displayMetrics.heightPixels}")
     }
 }

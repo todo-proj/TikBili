@@ -15,6 +15,7 @@ import com.benyq.tikbili.player.playback.PlaybackController
 import com.benyq.tikbili.player.playback.PlaybackEvent
 import com.benyq.tikbili.player.playback.PlayerEvent
 import com.benyq.tikbili.player.playback.VideoLayer
+import com.benyq.tikbili.player.playback.layer.base.BaseLayer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -27,7 +28,7 @@ import com.bumptech.glide.request.target.Target
  * @date 4/11/2024
  *
  */
-open class CoverLayer : VideoLayer() {
+open class CoverLayer : BaseLayer() {
     override val tag: String = "CoverLayer"
 
     private val _displayModeHelper: DisplayModeHelper = DisplayModeHelper()

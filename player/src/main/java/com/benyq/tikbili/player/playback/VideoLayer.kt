@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
+import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.player.IPlayer
 import com.benyq.tikbili.player.source.MediaSource
 
@@ -24,6 +25,7 @@ abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLaye
         if (_layerHost == null) {
             _layerHost = layerHost
             layerHost.addVideoLayerHostListener(this)
+            onBindLayerHost(layerHost)
             layerHost.videoView()?.let {
                 bindVideoView(it)
             }
@@ -33,27 +35,34 @@ abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLaye
     fun unBindLayerHost(layerHost: VideoLayerHost) {
         if (_layerHost != null && _layerHost == layerHost) {
             _layerHost?.removeVideoLayerHostListener(this)
+            onUnbindLayerHost(layerHost)
             val videoView = layerHost.videoView()
             unBindVideoView(videoView)
             _layerHost = null
         }
     }
 
-    fun bindVideoView(videoView: VideoView?) {
-        videoView?.addVideoViewListener(this)
-        videoView?.controller()?.let { bindController(it) }
+    private fun bindVideoView(videoView: VideoView?) {
+        videoView?.let {
+            videoView.addVideoViewListener(this)
+            onBindVideoView(videoView)
+            videoView.controller()?.let { bindController(it) }
+        }
     }
 
-    fun unBindVideoView(videoView: VideoView?) {
-        videoView?.removeVideoViewListener(this)
-        videoView?.controller()?.let { unbindController(it) }
+    private fun unBindVideoView(videoView: VideoView?) {
+        videoView?.let {
+            videoView.removeVideoViewListener(this)
+            unBindVideoView(videoView)
+            videoView.controller()?.let { unbindController(it) }
+        }
     }
 
-    fun bindController(playbackController: PlaybackController) {
+    private fun bindController(playbackController: PlaybackController) {
         onBindPlaybackController(playbackController)
     }
 
-    fun unbindController(playbackController: PlaybackController) {
+    private fun unbindController(playbackController: PlaybackController) {
         onUnbindPlaybackController(playbackController)
     }
 
@@ -78,6 +87,12 @@ abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLaye
         unBindVideoView(videoView)
     }
 
+    protected open fun onBindVideoView(videoView: VideoView) {}
+
+    protected open fun onUnBindVideoView(videoView: VideoView) {}
+    protected open fun onBindLayerHost(layerHost: VideoLayerHost) {}
+    protected open fun onUnbindLayerHost(layerHost: VideoLayerHost) {}
+
     fun createLayerView(): View? {
         val layerHost = _layerHost ?: return null
         return createLayerView(layerHost)
@@ -89,6 +104,10 @@ abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLaye
 
     fun videoView(): VideoView? {
         return _layerHost?.videoView()
+    }
+
+    fun layerHost(): VideoLayerHost? {
+        return _layerHost
     }
 
     fun controller(): PlaybackController? {
@@ -121,6 +140,7 @@ abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLaye
 
     open fun show() {
         if (isShowing()) return
+        L.d(this, "show")
         val layerHost = _layerHost ?: return
         val layerView = createLayerView(layerHost)
         layerHost.addLayerView(this)
@@ -132,12 +152,14 @@ abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLaye
 
     open fun dismiss() {
         if (!isShowing()) return
+        L.d(this, "dismiss")
         val layerHost = _layerHost ?: return
         layerHost.removeLayerView(this)
     }
 
     open fun hide() {
         if (!isShowing()) return
+        L.d(this, "hide")
         _layerView?.let {
             if (it.visibility != View.GONE) {
                 it.visibility = View.GONE

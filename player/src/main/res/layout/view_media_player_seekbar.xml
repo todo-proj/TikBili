@@ -41,6 +41,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@id/text2"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
         android:layout_toEndOf="@id/text1"
         android:progressBackgroundTint="#FFFFFF"
         android:progressTint="#FFFFFF"

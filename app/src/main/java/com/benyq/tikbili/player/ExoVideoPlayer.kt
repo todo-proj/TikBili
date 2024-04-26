@@ -41,9 +41,9 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
     private lateinit var mSimpleExoPlayer: SimpleExoPlayer
     private var mMediaStore: MediaSource? = null
 
-    var isVideoPlaying = false
+    private var isVideoPlaying = false
         private set
-
+    private var isFirstFrameRendered = false
     private val mainHandler = Handler(Looper.getMainLooper())
     private lateinit var updateProgressAction: Runnable
 
@@ -83,8 +83,11 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
 
         override fun onRenderedFirstFrame() {
             super.onRenderedFirstFrame()
-            _dispatcher.obtain(InfoVideoRenderingStart::class.java).dispatch()
-            L.d(this@ExoVideoPlayer, "onRenderedFirstFrame")
+            if (!isFirstFrameRendered) {
+                isFirstFrameRendered = true
+                _dispatcher.obtain(InfoVideoRenderingStart::class.java).dispatch()
+                L.d(this@ExoVideoPlayer, "onRenderedFirstFrame")
+            }
         }
     }
 
@@ -95,7 +98,7 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
                 val position = mSimpleExoPlayer.currentPosition
                 val bufferPosition = mSimpleExoPlayer.contentBufferedPosition
                 val duration = mSimpleExoPlayer.duration
-                _dispatcher.obtain(InfoProgressUpdate::class.java).init(position, duration).dispatch()
+                _dispatcher.obtain(InfoProgressUpdate::class.java).init(position, duration, bufferPosition).dispatch()
                 mainHandler.postDelayed(this, 30)
             }
         }
@@ -135,6 +138,10 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
 
     override fun setSpeed(speed: Float) {
         mSimpleExoPlayer.setPlaybackSpeed(speed)
+    }
+
+    override fun getSpeed(): Float {
+        return mSimpleExoPlayer.playbackParameters.speed
     }
 
     override fun setDataSource(mediaSource: MediaSource) {

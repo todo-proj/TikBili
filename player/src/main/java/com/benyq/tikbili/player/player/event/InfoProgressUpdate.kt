@@ -17,9 +17,13 @@ class InfoProgressUpdate : Event(PlayerEvent.Info.PROGRESS_UPDATE) {
     var duration: Long = 0
         private set
 
-    fun init(currentPosition: Long, duration: Long): InfoProgressUpdate {
+    var buffer: Long = 0
+        private set
+
+    fun init(currentPosition: Long, duration: Long, buffer: Long): InfoProgressUpdate {
         this.duration = duration
         this.currentPosition = currentPosition
+        this.buffer = buffer
         return this
     }
 
@@ -27,5 +31,6 @@ class InfoProgressUpdate : Event(PlayerEvent.Info.PROGRESS_UPDATE) {
         super.recycle()
         currentPosition = 0
         duration = 0
+        buffer = 0
     }
 }

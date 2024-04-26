@@ -46,6 +46,7 @@ import com.benyq.tikbili.player.dispather.EventDispatcher
     abstract fun isPaused(): Boolean
     abstract fun isLooping(): Boolean
     abstract fun setSpeed(speed: Float)
+    abstract fun getSpeed(): Float
 
     abstract fun isInPlaybackState(): Boolean
 

@@ -6,7 +6,7 @@ import android.animation.ObjectAnimator
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.benyq.tikbili.player.playback.VideoLayer
+import com.benyq.tikbili.base.utils.L
 
 /**
  *
@@ -14,7 +14,7 @@ import com.benyq.tikbili.player.playback.VideoLayer
  * @date 4/7/2024
  *
  */
-abstract class AnimateLayer : VideoLayer() {
+abstract class AnimateLayer : BaseLayer() {
 
     companion object {
         const val DEFAULT_ANIMATE_DURATION: Long = 300
@@ -27,6 +27,17 @@ abstract class AnimateLayer : VideoLayer() {
     }
     private val handler = Handler(Looper.getMainLooper())
     private val animateDismissRunnable = Runnable { animateDismiss() }
+
+    private var _animateShowListener: Animator.AnimatorListener? = null
+    private var _animateDismissListener: Animator.AnimatorListener? = null
+
+    open fun setAnimateShowListener(listener: Animator.AnimatorListener?) {
+        _animateShowListener = listener
+    }
+
+    open fun setAnimateDismissListener(listener: Animator.AnimatorListener?) {
+        _animateDismissListener = listener
+    }
 
     fun animateShow(
         autoDismiss: Boolean,
@@ -57,6 +68,7 @@ abstract class AnimateLayer : VideoLayer() {
                 }
             }
         }
+        L.v(this, "animateShow", "start")
         show()
         if (!isShowing()) return
         _animator.removeAllListeners()
@@ -65,15 +77,13 @@ abstract class AnimateLayer : VideoLayer() {
         _animator.setTarget(getView())
         initAnimateShowProperty(_animator)
         _animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator) {
-                Log.d("pauseLayer", "onAnimationStart: ")
-            }
             override fun onAnimationCancel(animation: Animator) {
                 resetViewAnimateProperty()
+                L.v(this, "animateShow", "cancel")
             }
 
             override fun onAnimationEnd(animation: Animator) {
-                Log.d("pauseLayer", "onAnimationEnd: ")
+                L.v(this, "animateShow", "end")
                 resetViewAnimateProperty()
                 setState(State.IDLE)
             }
@@ -82,10 +92,17 @@ abstract class AnimateLayer : VideoLayer() {
         if (showListener != null) {
             _animator.addListener(showListener)
         }
+        if (_animateShowListener != null) {
+            _animator.addListener(_animateShowListener)
+        }
         setState(State.SHOWING)
         if (autoDismiss) {
             postDismissRunnable()
         }
+    }
+
+    open fun requestAnimateDismiss(reason: String) {
+        animateDismiss()
     }
 
     fun animateDismiss(
@@ -111,28 +128,30 @@ abstract class AnimateLayer : VideoLayer() {
                 }
             }
         }
+        L.v(this, "animateDismiss", "start")
         _animator.removeAllListeners()
         _animator.startDelay = startDelay
         _animator.duration = duration
         _animator.setTarget(getView())
         initAnimateDismissProperty(_animator)
         _animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator) {
-                Log.d("pauseLayer", "onAnimationStart: ")
-            }
             override fun onAnimationCancel(animation: Animator) {
                 resetViewAnimateProperty()
+                L.v(this, "animateDismiss", "cancel")
             }
 
             override fun onAnimationEnd(animation: Animator) {
                 dismiss()
-                Log.d("pauseLayer", "onAnimationEnd: ")
+                L.v(this, "animateDismiss", "end")
             }
 
         })
         _animator.start()
         if (dismissListener != null) {
             _animator.addListener(dismissListener)
+        }
+        if (_animateDismissListener != null) {
+            _animator.addListener(_animateDismissListener)
         }
         setState(State.DISMISSING)
     }

@@ -1,6 +1,7 @@
 package com.benyq.tikbili.player.playback
 
 import android.content.Context
+import android.util.SparseArray
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -16,6 +17,7 @@ class VideoLayerHost(context: Context) {
 
     private val _layers = CopyOnWriteArrayList<VideoLayer>()
     private val _listeners = CopyOnWriteArrayList<VideoLayerHostListener>()
+    private val _backHandlers = SparseArray<BackPressedHandler>()
 
     private val _hostView: FrameLayout
     private var _videoView: VideoView? = null
@@ -56,6 +58,16 @@ class VideoLayerHost(context: Context) {
         }
     }
 
+    fun onBackPressed(): Boolean {
+        for (i in _backHandlers.size() - 1 downTo 0) {
+            val handler = _backHandlers.get(_backHandlers.keyAt(i))
+            if (handler.onBackPressed()) {
+                return true
+            }
+        }
+        return false
+    }
+
     fun addVideoLayerHostListener(listener: VideoLayerHostListener?) {
         if (listener != null && !_listeners.contains(listener)) {
             _listeners.add(listener)
@@ -65,6 +77,18 @@ class VideoLayerHost(context: Context) {
     fun removeVideoLayerHostListener(listener: VideoLayerHostListener?) {
         if (listener != null) {
             _listeners.remove(listener)
+        }
+    }
+
+    fun registerBackPressedHandler(backPressedHandler: BackPressedHandler, priority: Int) {
+        _backHandlers[priority] = backPressedHandler
+    }
+
+    fun unregisterBackPressedHandler(backPressedHandler: BackPressedHandler) {
+        for (i in _backHandlers.size() - 1 downTo 0) {
+            if (_backHandlers[i] == backPressedHandler) {
+                _backHandlers.remove(i)
+            }
         }
     }
 
@@ -185,6 +209,11 @@ class VideoLayerHost(context: Context) {
     interface VideoLayerHostListener {
         fun onLayerHostAttachedToVideoView(videoView: VideoView)
         fun onLayerHostDetachedFromVideoView(videoView: VideoView)
+    }
+
+
+    fun interface BackPressedHandler {
+        fun onBackPressed(): Boolean
     }
 
 }
