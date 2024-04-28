@@ -12,6 +12,7 @@ import com.benyq.tikbili.player.playback.PlaybackController
 import com.benyq.tikbili.player.playback.VideoLayerHost
 import com.benyq.tikbili.player.playback.layer.PauseLayer
 import com.benyq.tikbili.player.source.MediaSource
+import com.benyq.tikbili.scene.horicontal.layer.BrightnessVolumeLayer
 import com.benyq.tikbili.scene.horicontal.layer.GestureLayer
 import com.benyq.tikbili.scene.horicontal.layer.SpeedSelectDialogLayer
 import com.benyq.tikbili.scene.horicontal.layer.TimeProgressBarLayer
@@ -58,6 +59,7 @@ class HorizontalVideoActivity : BaseActivity<ActivityHorizontalVideoBinding>(), 
         layerHost.addLayer(TitleBarLayer())
         layerHost.addLayer(PauseLayer())
         layerHost.addLayer(SpeedSelectDialogLayer())
+        layerHost.addLayer(BrightnessVolumeLayer())
         layerHost.attachToVideoView(dataBind.videoView)
         dataBind.videoView.bindDataSource(mediaSource)
         playbackController.bind(dataBind.videoView)

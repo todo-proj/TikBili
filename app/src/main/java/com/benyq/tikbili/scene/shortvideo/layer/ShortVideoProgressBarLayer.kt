@@ -97,12 +97,12 @@ class ShortVideoProgressBarLayer: AnimateLayer() {
 
 
     private fun onManualStartSeek() {
-        _layerView?.alpha = 1f
+        getView()?.alpha = 1f
         controller()?.dispatcher()?.obtain(ActionTrackProgressBar::class.java)?.init(true)?.dispatch()
     }
 
     private fun onManualStopSeek() {
-        _layerView?.alpha = 0f
+        getView()?.alpha = 0f
         controller()?.dispatcher()?.obtain(ActionTrackProgressBar::class.java)?.init(false)?.dispatch()
     }
 
@@ -152,7 +152,7 @@ class ShortVideoProgressBarLayer: AnimateLayer() {
             when(event.code) {
                 PlaybackEvent.State.BIND_PLAYER -> {
                     show()
-                    _layerView?.alpha = 0f
+                    getView()?.alpha = 0f
                 }
                 PlayerEvent.Info.PROGRESS_UPDATE -> {
                     if (event is InfoProgressUpdate) {

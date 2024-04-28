@@ -48,6 +48,9 @@ import com.benyq.tikbili.player.dispather.EventDispatcher
     abstract fun setSpeed(speed: Float)
     abstract fun getSpeed(): Float
 
+    abstract fun setVolume(volume: Float)
+    abstract fun getVolume(): Float
+
     abstract fun isInPlaybackState(): Boolean
 
     abstract fun getState(): PlayState

@@ -144,6 +144,14 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
         return mSimpleExoPlayer.playbackParameters.speed
     }
 
+    override fun setVolume(volume: Float) {
+        mSimpleExoPlayer.volume = volume
+    }
+
+    override fun getVolume(): Float {
+        return mSimpleExoPlayer.volume
+    }
+
     override fun setDataSource(mediaSource: MediaSource) {
         mMediaStore = mediaSource
     }

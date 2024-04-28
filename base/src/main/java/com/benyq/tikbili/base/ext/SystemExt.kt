@@ -2,7 +2,10 @@ package com.benyq.tikbili.base.ext
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
+import android.provider.Settings
+import android.provider.Settings.SettingNotFoundException
 import android.view.Gravity
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -73,6 +76,30 @@ fun Fragment.systemBarColor(@ColorInt color: Int) {
 
 fun Fragment.fullScreen(fullScreen: Boolean = true) {
     requireActivity().fullScreen(fullScreen)
+}
+
+
+fun Context.getSystemBrightness(): Float {
+    var systemBrightness = 0
+    try {
+        systemBrightness =
+            Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS)
+    } catch (e: SettingNotFoundException) {
+        e.printStackTrace()
+    }
+    return systemBrightness / getSystemSettingBrightnessMax()
+}
+
+fun getSystemSettingBrightnessMax(): Float {
+    try {
+        val res = Resources.getSystem()
+        val resId = res.getIdentifier("config_screenBrightnessSettingMaximum", "integer", "android")
+        if (resId != 0) {
+            return res.getInteger(resId).toFloat()
+        }
+    } catch (e: Exception) { /* ignore */
+    }
+    return 255f
 }
 
 
