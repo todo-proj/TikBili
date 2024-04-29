@@ -57,16 +57,20 @@ class GestureLayer: BaseLayer() {
         val layerHost = layerHost() ?: return
         val titleBarLayer = layerHost.findLayer(TitleBarLayer::class.java)
         val timeProgressBarLayer = layerHost.findLayer(TimeProgressBarLayer::class.java)
+        val playPauseLayer = layerHost.findLayer(PlayPauseLayer::class.java)
         titleBarLayer?.animateShow(true)
         timeProgressBarLayer?.animateShow(true)
+        playPauseLayer?.animateShow(true)
     }
 
     fun dismissController() {
         val layerHost = layerHost() ?: return
         val titleBarLayer = layerHost.findLayer(TitleBarLayer::class.java)
         val timeProgressBarLayer = layerHost.findLayer(TimeProgressBarLayer::class.java)
+        val playPauseLayer = layerHost.findLayer(PlayPauseLayer::class.java)
         titleBarLayer?.animateDismiss()
         timeProgressBarLayer?.animateDismiss()
+        playPauseLayer?.animateDismiss()
     }
 
     fun toggleControllerVisibility() {
