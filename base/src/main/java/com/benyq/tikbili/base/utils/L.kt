@@ -9,8 +9,12 @@ import android.util.Log
  *
  */
 object L {
-    private const val TAG = "Player_Kit"
+    private var TAG = "Player_Kit"
     var ENABLE_LOG = false
+
+    fun setTag(tag: String) {
+        TAG = tag
+    }
 
     private fun obj2String(o: Any?): String? {
         return when {

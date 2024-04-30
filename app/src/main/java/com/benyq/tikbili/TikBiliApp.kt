@@ -28,10 +28,9 @@ class TikBiliApp: Application() {
         super.onCreate()
         appCtx = this
         L.ENABLE_LOG = BuildConfig.DEBUG
+        L.setTag("TikBili")
         MMKV.initialize(this)
         IPlayer.Factory.Default.set(ExoPlayerFactory(this))
         StartLogHelper.getApplicationTime()
-
-        Log.d("TAG", "onCreate: ${resources.displayMetrics.widthPixels}-${resources.displayMetrics.heightPixels}")
     }
 }
