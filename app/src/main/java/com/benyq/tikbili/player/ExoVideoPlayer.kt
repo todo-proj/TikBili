@@ -3,25 +3,24 @@ package com.benyq.tikbili.player
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Surface
 import com.benyq.tikbili.base.utils.L
+import com.benyq.tikbili.player.player.IPlayer.PlayState
+import com.benyq.tikbili.player.player.PlayerAdapter
 import com.benyq.tikbili.player.player.event.ActionPause
+import com.benyq.tikbili.player.player.event.ActionPrepare
+import com.benyq.tikbili.player.player.event.ActionSetSurface
 import com.benyq.tikbili.player.player.event.ActionStart
 import com.benyq.tikbili.player.player.event.InfoProgressUpdate
-import com.benyq.tikbili.player.source.MediaSource
-import com.benyq.tikbili.player.player.PlayerAdapter
-import com.benyq.tikbili.player.player.event.ActionSetSurface
 import com.benyq.tikbili.player.player.event.InfoVideoRenderingStart
+import com.benyq.tikbili.player.player.event.StateCompleted
+import com.benyq.tikbili.player.source.MediaSource
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.Timeline
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.upstream.DataSpec
-import com.google.android.exoplayer2.upstream.cache.CacheWriter
 import com.google.android.exoplayer2.video.VideoSize
 
 /**
@@ -47,6 +46,9 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
     private val mainHandler = Handler(Looper.getMainLooper())
     private lateinit var updateProgressAction: Runnable
 
+    private var startTime: Long = -1L
+    private var _isLooping = false
+
     private val mMediaEventListener = object : Player.Listener {
 
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
@@ -54,6 +56,22 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
         }
 
         override fun onPlaybackStateChanged(state: Int) {
+            if (state == Player.STATE_READY) {
+                if (isPreparing()) {
+                    setState(PlayState.STATE_PREPARED)
+                    if (startTime != -1L) {
+                        mSimpleExoPlayer.seekTo(startTime)
+                    }
+                }
+            }
+            if (state == Player.STATE_ENDED) {
+                _dispatcher.obtain(StateCompleted::class.java).dispatch()
+                clearProgress()
+                setState(PlayState.STATE_COMPLETED)
+                if (isLooping()) {
+                    start()
+                }
+            }
             L.d(this@ExoVideoPlayer, "onPlaybackStateChanged", state)
         }
 
@@ -75,6 +93,7 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
                 else -> "其他异常"
             }
             L.e(this@ExoVideoPlayer, "onPlayerError", message)
+            setState(PlayState.STATE_ERROR)
         }
 
         override fun onVideoSizeChanged(videoSize: VideoSize) {
@@ -99,7 +118,9 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
                 val bufferPosition = mSimpleExoPlayer.contentBufferedPosition
                 val duration = mSimpleExoPlayer.duration
                 _dispatcher.obtain(InfoProgressUpdate::class.java).init(position, duration, bufferPosition).dispatch()
-                mainHandler.postDelayed(this, 30)
+                mainHandler.postDelayed(this, 50)
+
+                recordProgress()
             }
         }
     }
@@ -133,7 +154,12 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
     }
 
     override fun isLooping(): Boolean {
-        return mSimpleExoPlayer.repeatMode == Player.REPEAT_MODE_ALL
+        return _isLooping
+    }
+
+    override fun setLooping(looping: Boolean) {
+        if (looping == isLooping()) return
+        _isLooping = looping
     }
 
     override fun setSpeed(speed: Float) {
@@ -152,10 +178,6 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
         return mSimpleExoPlayer.volume
     }
 
-    override fun setDataSource(mediaSource: MediaSource) {
-        mMediaStore = mediaSource
-    }
-
     override fun getDataSource(): MediaSource? {
         return mMediaStore
     }
@@ -164,38 +186,52 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
         mSimpleExoPlayer.playWhenReady = startWhenPrepared
     }
 
-    override fun prepare() {
-        mMediaStore?.let {
-            playVideo(it.getUniqueId(), it.url)
-        }
+    override fun setStartTime(startTime: Long) {
+        this.startTime = startTime
+        L.d(this@ExoVideoPlayer, "setStartTime", startTime)
+    }
+
+    override fun prepare(mediaSource: MediaSource) {
+        if (checkIsRelease("prepare")) return
+        _dispatcher.obtain(ActionPrepare::class.java).init(mediaSource).dispatch()
+        mMediaStore = mediaSource
+        // set start time
+        setStartTime(mediaSource)
+        playVideo(mediaSource.getUniqueId(), mediaSource.url)
+        setState(PlayState.STATE_PREPARING)
     }
 
     override fun start() {
+        if (checkIsRelease("start")) return
         _dispatcher.obtain(ActionStart::class.java).dispatch()
         mSimpleExoPlayer.play()
+        if (isCompleted()) {
+            seekTo(0)
+        }
         setState(PlayState.STATE_STARTED)
     }
 
     override fun pause() {
+        if (checkIsRelease("pause")) return
         _dispatcher.obtain(ActionPause::class.java).dispatch()
+        recordProgress()
         mSimpleExoPlayer.pause()
         setState(PlayState.STATE_PAUSED)
     }
 
     override fun stop() {
-        getDataSource()?.let {
-            VideoPlayProgressRecorder.record(it, mSimpleExoPlayer.currentPosition)
-        }
+        if (checkIsRelease("stop")) return
+        recordProgress()
         mSimpleExoPlayer.pause()
-        mSimpleExoPlayer.seekTo(0)
+        setState(PlayState.STATE_STOPPED)
     }
 
     override fun release() {
-        getDataSource()?.let {
-            VideoPlayProgressRecorder.record(it, mSimpleExoPlayer.currentPosition)
-        }
+        if (checkIsRelease("release")) return
+        recordProgress()
         mSimpleExoPlayer.stop()
         mSimpleExoPlayer.release()
+        setState(PlayState.STATE_RELEASED)
     }
 
     override fun setSurface(surface: Surface?) {
@@ -220,7 +256,31 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
         val simplePlayer = SimpleExoPlayer.Builder(context)
             .build()
         simplePlayer.addListener(mMediaEventListener)
-        simplePlayer.repeatMode = Player.REPEAT_MODE_ALL
         mSimpleExoPlayer = simplePlayer
+    }
+
+    private fun setStartTime(source: MediaSource) {
+        if (startTime <= 0) {
+            val progress = VideoPlayProgressRecorder.getProgress(source)
+            if (progress > 0) {
+                startTime = progress
+            }
+        }
+    }
+
+    private fun recordProgress() {
+        val dataSource = getDataSource() ?: return
+        if (isInPlaybackState() && !isCompleted() || isError()) {
+            val progress = mSimpleExoPlayer.currentPosition
+            val duration = mSimpleExoPlayer.duration
+            if (progress > 1000 && duration > 0 && progress < duration - 1000) {
+                VideoPlayProgressRecorder.record(dataSource, progress)
+            }
+        }
+    }
+
+    private fun clearProgress() {
+        val mediaSource: MediaSource = getDataSource() ?: return
+        VideoPlayProgressRecorder.removeProgress(mediaSource)
     }
 }

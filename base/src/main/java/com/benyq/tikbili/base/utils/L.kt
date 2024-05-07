@@ -10,8 +10,10 @@ import android.util.Log
  */
 object L {
     private var TAG = "Player_Kit"
+    @JvmStatic
     var ENABLE_LOG = false
 
+    @JvmStatic
     fun setTag(tag: String) {
         TAG = tag
     }
@@ -31,24 +33,35 @@ object L {
         }
     }
 
+    @JvmStatic
     fun v(o: Any, method: String, vararg args: Any) {
         if (ENABLE_LOG) {
             Log.v(TAG, createLog(o, method, *args))
         }
     }
 
+    @JvmStatic
     fun d(o: Any, method: String, vararg args: Any?) {
         if (ENABLE_LOG) {
             Log.d(TAG, createLog(o, method, *args))
         }
     }
 
+    @JvmStatic
+    fun i(o: Any, method: String, vararg args: Any?) {
+        if (ENABLE_LOG) {
+            Log.i(TAG, createLog(o, method, *args))
+        }
+    }
+
+    @JvmStatic
     fun w(o: Any, method: String, vararg args: Any?) {
         if (ENABLE_LOG) {
             Log.w(TAG, createLog(o, method, *args))
         }
     }
 
+    @JvmStatic
     fun e(o: Any, method: String, vararg args: Any?) {
         if (ENABLE_LOG) {
             Log.e(TAG, createLog(o, method, *args))

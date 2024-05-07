@@ -1,8 +1,8 @@
 package com.benyq.tikbili.player.player
 
 import android.view.Surface
-import com.benyq.tikbili.player.source.MediaSource
 import com.benyq.tikbili.player.dispather.EventDispatcher
+import com.benyq.tikbili.player.source.MediaSource
 
 /**
  *
@@ -10,55 +10,58 @@ import com.benyq.tikbili.player.dispather.EventDispatcher
  * @date 4/8/2024
  *
  */
- abstract class IPlayer {
+ interface IPlayer {
 
-    abstract fun setDataSource(mediaSource: MediaSource)
-    abstract fun getDataSource(): MediaSource?
+     fun getDataSource(): MediaSource?
 
-    abstract fun setStartWhenPrepared(startWhenPrepared: Boolean)
+     fun setStartWhenPrepared(startWhenPrepared: Boolean)
 
-    abstract fun prepare()
+    fun setStartTime(startTime: Long)
+     fun prepare(mediaSource: MediaSource)
 
-    abstract fun start()
+     fun start()
 
-    abstract fun pause()
+     fun pause()
 
-    abstract fun stop()
+     fun stop()
 
-    abstract fun release()
+     fun release()
 
-    abstract fun setSurface(surface: Surface?)
+     fun setSurface(surface: Surface?)
 
-    abstract fun getVideoWidth(): Int
+     fun getVideoWidth(): Int
 
-    abstract fun getVideoHeight(): Int
+     fun getVideoHeight(): Int
 
-    abstract fun getDuration(): Long
-    abstract fun getCurrentPosition(): Long
-    abstract fun getBufferPercent(): Int
-    abstract fun seekTo(progress: Long)
+     fun getDuration(): Long
+     fun getCurrentPosition(): Long
+     fun getBufferPercent(): Int
+     fun seekTo(progress: Long)
 
-    abstract fun isReleased(): Boolean
+     fun isReleased(): Boolean
 
-    abstract fun isIDLE(): Boolean
-    abstract fun isCompleted(): Boolean
-    abstract fun isPlaying(): Boolean
-    abstract fun isPaused(): Boolean
-    abstract fun isLooping(): Boolean
-    abstract fun setSpeed(speed: Float)
-    abstract fun getSpeed(): Float
+     fun isIDLE(): Boolean
+     fun isCompleted(): Boolean
+     fun isError(): Boolean
+     fun isPreparing(): Boolean
+     fun isPlaying(): Boolean
+     fun isPaused(): Boolean
+     fun isLooping(): Boolean
+     fun setLooping(looping: Boolean)
+     fun setSpeed(speed: Float)
+     fun getSpeed(): Float
 
-    abstract fun setVolume(volume: Float)
-    abstract fun getVolume(): Float
+     fun setVolume(volume: Float)
+     fun getVolume(): Float
 
-    abstract fun isInPlaybackState(): Boolean
+     fun isInPlaybackState(): Boolean
 
-    abstract fun getState(): PlayState
-    abstract fun addPlayerListener(listener: EventDispatcher.EventListener)
+     fun getState(): PlayState
+     fun addPlayerListener(listener: EventDispatcher.EventListener)
 
-    abstract fun removePlayerListener(listener: EventDispatcher.EventListener)
+     fun removePlayerListener(listener: EventDispatcher.EventListener)
 
-    protected abstract fun setState(state: PlayState)
+     fun setState(state: PlayState)
 
     interface Factory {
         object Default {

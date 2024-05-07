@@ -14,10 +14,10 @@ import java.io.File
 
 object MediaCacheFactory {
     private const val TAG = "MediaCacheFactory"
-    private var cacheFactory: DataSource.Factory? = null
+    private var cacheFactory: CacheDataSource.Factory? = null
 
     @Synchronized
-    fun getCacheFactory(ctx: Context): DataSource.Factory {
+    fun getCacheFactory(ctx: Context): CacheDataSource.Factory {
         if (cacheFactory == null) {
             val downDirectory = File(ctx.cacheDir, "videos")
             val cache = SimpleCache(

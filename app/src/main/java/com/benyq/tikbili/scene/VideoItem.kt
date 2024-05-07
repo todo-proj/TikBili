@@ -16,6 +16,8 @@ data class VideoItem(
     val videoUrl: String,
     val videoWidth: Int,
     val videoHeight: Int,
+    val duration: Long,
+    val byteSize: Long,
     val stat: Stat,
     val poster: Poster,
 ): Serializable {
@@ -43,7 +45,7 @@ data class VideoItem(
         }
 
         private fun createMediaSource(videoItem: VideoItem): MediaSource {
-            return MediaSource(videoItem.id, videoItem.videoUrl, videoItem.coverUrl, videoItem.videoWidth, videoItem.videoHeight)
+            return MediaSource(videoItem.id, videoItem.videoUrl, videoItem.coverUrl, videoItem.videoWidth, videoItem.videoHeight, videoItem.duration, videoItem.byteSize)
         }
     }
 

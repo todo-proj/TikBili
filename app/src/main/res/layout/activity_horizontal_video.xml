@@ -14,7 +14,7 @@
             android:id="@+id/video_view"
             android:transitionName="video"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.benyq.tikbili.base.ext
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.res.Resources
 import android.os.Build
@@ -20,6 +21,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+
+lateinit var appCtx: Application
 
 fun Activity.showLoading() {
     contentView()?.apply {

@@ -35,7 +35,7 @@ data class VideoUrlModel(
     @SerializedName("support_formats")
     val supportFormats: List<SupportFormat>,
     @SerializedName("timelength")
-    val timelength: Int,
+    val timelength: Long,
     @SerializedName("video_codecid")
     val videoCodecid: Int
 ) {
@@ -45,11 +45,11 @@ data class VideoUrlModel(
         @SerializedName("backup_url")
         val backupUrl: List<String>,
         @SerializedName("length")
-        val length: Int,
+        val length: Long,
         @SerializedName("order")
         val order: Int,
         @SerializedName("size")
-        val size: Int,
+        val size: Long,
         @SerializedName("url")
         val url: String,
         @SerializedName("vhead")

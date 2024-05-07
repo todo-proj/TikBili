@@ -19,4 +19,8 @@ object VideoPlayProgressRecorder {
     fun getProgress(mediaSource: MediaSource): Long {
         return progressMap[mediaSource.getUniqueId()] ?: 0
     }
+
+    fun removeProgress(mediaSource: MediaSource) {
+        progressMap.remove(mediaSource.getUniqueId())
+    }
 }

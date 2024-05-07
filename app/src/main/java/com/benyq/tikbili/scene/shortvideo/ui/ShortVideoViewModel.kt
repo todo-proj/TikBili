@@ -52,6 +52,8 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
                                     URLDecoder.decode(durl.url, "utf-8"),
                                     videoDetail.dimension.width,
                                     videoDetail.dimension.height,
+                                    durl.length,
+                                    durl.size,
                                     VideoItem.Stat(
                                         StringUtils.num2String(videoDetail.stat.like),
                                         StringUtils.num2String(videoDetail.stat.coin),

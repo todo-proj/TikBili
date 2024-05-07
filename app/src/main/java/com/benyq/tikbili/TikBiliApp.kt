@@ -3,8 +3,13 @@ package com.benyq.tikbili
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.benyq.tikbili.base.ext.appCtx
 import com.benyq.tikbili.base.utils.L
+import com.benyq.tikbili.player.ExoPlayerCacheLoader
 import com.benyq.tikbili.player.ExoPlayerFactory
+import com.benyq.tikbili.player.ExoPlayerPreloadTaskFactory
+import com.benyq.tikbili.player.download.CacheLoader
+import com.benyq.tikbili.player.download.IPreloadTask
 import com.benyq.tikbili.player.player.IPlayer
 import com.benyq.tikbili.utils.StartLogHelper
 import com.tencent.mmkv.MMKV
@@ -16,7 +21,6 @@ import com.tencent.mmkv.MMKV
  *
  */
 
-lateinit var appCtx: Application
 class TikBiliApp: Application() {
 
     override fun attachBaseContext(base: Context?) {
@@ -31,6 +35,7 @@ class TikBiliApp: Application() {
         L.setTag("TikBili")
         MMKV.initialize(this)
         IPlayer.Factory.Default.set(ExoPlayerFactory(this))
+        CacheLoader.Default.set(ExoPlayerCacheLoader(this, ExoPlayerPreloadTaskFactory(this)))
         StartLogHelper.getApplicationTime()
     }
 }

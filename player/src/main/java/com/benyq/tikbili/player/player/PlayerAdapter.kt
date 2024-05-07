@@ -1,7 +1,9 @@
 package com.benyq.tikbili.player.player
 
 import android.os.Looper
+import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.dispather.EventDispatcher
+import com.benyq.tikbili.player.player.IPlayer.PlayState
 
 /**
  *
@@ -9,7 +11,7 @@ import com.benyq.tikbili.player.dispather.EventDispatcher
  * @date 4/9/2024
  * IPlayer 适配器，切换内核的时候使用
  */
-abstract class PlayerAdapter: IPlayer() {
+abstract class PlayerAdapter: IPlayer {
 
     protected val _dispatcher = EventDispatcher(Looper.getMainLooper())
     protected var playState: PlayState = PlayState.STATE_IDLE
@@ -50,10 +52,26 @@ abstract class PlayerAdapter: IPlayer() {
         return playState == PlayState.STATE_PAUSED
     }
 
+    override fun isError(): Boolean {
+        return playState == PlayState.STATE_ERROR
+    }
+
+    override fun isPreparing(): Boolean {
+        return playState == PlayState.STATE_PREPARING
+    }
+
     override fun isInPlaybackState(): Boolean {
         when (playState) {
             PlayState.STATE_PREPARED, PlayState.STATE_STARTED, PlayState.STATE_PAUSED, PlayState.STATE_COMPLETED -> return true
             else -> {}
+        }
+        return false
+    }
+
+    protected fun checkIsRelease(func: String): Boolean {
+        if (isReleased()) {
+            L.e(this, func, "already released!")
+            return true
         }
         return false
     }

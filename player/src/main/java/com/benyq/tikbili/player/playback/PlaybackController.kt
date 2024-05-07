@@ -4,6 +4,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.Surface
 import com.benyq.tikbili.base.utils.L
+import com.benyq.tikbili.player.VideoPlayerSettings
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.event.StateBindPlayer
@@ -148,11 +149,12 @@ class PlaybackController(
         val dataSource = videoView.dataSource() ?: return
         val surface = videoView.surface() ?: return
         player.setSurface(surface)
+        L.d(this, "startPlayback", player.getState().ordinal)
         when (player.getState()) {
             IPlayer.PlayState.STATE_IDLE -> {
                 player.setStartWhenPrepared(startWhenPrepared)
-                player.setDataSource(dataSource)
-                player.prepare()
+                player.prepare(dataSource)
+                player.setLooping(VideoPlayerSettings.playBackCompleteAction() == VideoPlayerSettings.PLAY_LOOPING)
             }
 
             IPlayer.PlayState.STATE_PREPARED, IPlayer.PlayState.STATE_PAUSED, IPlayer.PlayState.STATE_COMPLETED -> {

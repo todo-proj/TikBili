@@ -13,7 +13,9 @@ data class MediaSource(
     val url: String,
     val coverUrl: String,
     val width: Int,
-    val height: Int
+    val height: Int,
+    val duration: Long,
+    val byteSize: Long
 ) : ExtraObject(), Serializable {
 
     val displayAspectRatio: Float = width.toFloat() / height

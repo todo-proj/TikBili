@@ -9,12 +9,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 import com.benyq.tikbili.base.ext.findItemViewByPosition
+import com.benyq.tikbili.base.utils.L
+import com.benyq.tikbili.player.VideoPlayerSettings
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
+import com.benyq.tikbili.player.download.PreloadManager
 import com.benyq.tikbili.player.playback.PlaybackController
 import com.benyq.tikbili.player.playback.PlayerEvent
 import com.benyq.tikbili.player.playback.VideoView
 import com.benyq.tikbili.scene.VideoItem
+import com.benyq.tikbili.scene.widgets.viewpager2.OnPageChangeCallbackCompat
 
 /**
  *
@@ -29,6 +33,7 @@ class ShortVideoPageView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), DefaultLifecycleObserver {
 
     private val controller: PlaybackController = PlaybackController()
+    private val preloadManager = PreloadManager()
 
     private val viewPager: ViewPager2
     private val shortVideoAdapter: ShortVideoAdapter
@@ -41,8 +46,9 @@ class ShortVideoPageView @JvmOverloads constructor(
         viewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
         shortVideoAdapter = ShortVideoAdapter()
         viewPager.adapter = shortVideoAdapter
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
+        viewPager.registerOnPageChangeCallback(object : OnPageChangeCallbackCompat(viewPager) {
+            override fun onPageSelected(position: Int, pager: ViewPager2?) {
+                L.d(this, "onPageSelected", position)
                 togglePlayback(position)
                 _onPageChangeCallback?.onPageSelected(position)
             }
@@ -55,7 +61,16 @@ class ShortVideoPageView @JvmOverloads constructor(
             override fun onEvent(event: Event) {
                 when(event.code) {
                     PlayerEvent.State.COMPLETED -> {
-
+                        L.d(this, "onEvent COMPLETED")
+                        val player = controller.videoView()?.player() ?: return
+                        if (!player.isLooping() && VideoPlayerSettings.playBackCompleteAction() == VideoPlayerSettings.PLAY_NEXT) {
+                            val currentPosition: Int = viewPager.currentItem
+                            L.d(this, "onEvent COMPLETED", currentPosition)
+                            val nextPosition = currentPosition + 1
+                            if (nextPosition < shortVideoAdapter.getItemCount()) {
+                                setCurrentItem(nextPosition, true)
+                            }
+                        }
                     }
                 }
             }
@@ -63,6 +78,7 @@ class ShortVideoPageView @JvmOverloads constructor(
     }
 
     fun setItems(items: List<VideoItem>) {
+        preloadManager.appendItems(items.map { VideoItem.toMediaSource(it) })
         shortVideoAdapter.setItems(items)
         viewPager.getChildAt(0).post { this.play() }
     }
@@ -74,8 +90,14 @@ class ShortVideoPageView @JvmOverloads constructor(
         }
     }
 
+    fun setCurrentItem(position: Int, smooth: Boolean) {
+        L.d(this, "setCurrentItem", position, smooth)
+        viewPager.setCurrentItem(position, smooth)
+    }
+
     private fun togglePlayback(position: Int) {
         val videoView = viewPager.findItemViewByPosition(position) as? VideoView?
+        L.d(this, "togglePlayback", controller.videoView(), videoView, position)
         if (controller.videoView() == null) {
             if (videoView != null) {
                 controller.bind(videoView)
@@ -132,6 +154,7 @@ class ShortVideoPageView @JvmOverloads constructor(
         _lifeCycle?.removeObserver(this)
         _lifeCycle = null
         controller.stopPlayback()
+        preloadManager.cancelAll()
     }
 
     fun interface OnPageSelectedListener {

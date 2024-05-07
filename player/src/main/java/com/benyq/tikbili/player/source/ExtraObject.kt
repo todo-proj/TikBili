@@ -19,7 +19,7 @@ open class ExtraObject: Serializable {
         if (clazz.isInstance(extra)) {
             return clazz.cast(extra)
         }else {
-            throw ClassCastException(extra.javaClass.toString() + " can't be cast to + " + clazz)
+            throw ClassCastException(extra.javaClass.toString() + " can't be cast to " + clazz)
         }
     }
 
