@@ -16,8 +16,7 @@ object VideoPlayerSettings {
     private var _playBackCompleteAction by MMKVValue(PLAYBACK_COMPLETE_ACTION, PLAY_LOOPING)
 
     fun playBackCompleteAction(): Int {
-//        return _playBackCompleteAction
-        return PLAY_NEXT
+        return _playBackCompleteAction
     }
 
     fun setPlayBackCompleteAction(action: Int) {
