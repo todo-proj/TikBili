@@ -11,7 +11,7 @@ import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.PlaybackController
 import com.benyq.tikbili.player.playback.PlaybackEvent
-import com.benyq.tikbili.player.playback.PlayerEvent
+import com.benyq.tikbili.player.player.PlayerEvent
 import com.benyq.tikbili.player.playback.layer.base.AnimateLayer
 import com.benyq.tikbili.player.player.event.InfoProgressUpdate
 import com.benyq.tikbili.player.utils.TimeUtils.time2String

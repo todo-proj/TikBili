@@ -5,15 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
 import com.benyq.tikbili.R
 import com.benyq.tikbili.base.ext.px
 import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.PlaybackController
-import com.benyq.tikbili.player.playback.PlaybackEvent
-import com.benyq.tikbili.player.playback.PlayerEvent
+import com.benyq.tikbili.player.player.PlayerEvent
 import com.benyq.tikbili.player.playback.VideoLayer
 import com.benyq.tikbili.scene.SceneEvent
 import com.benyq.tikbili.scene.shortvideo.event.ActionCommentVisible

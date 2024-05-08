@@ -16,7 +16,7 @@
  * Create Date : 2021/12/3
  */
 
-package com.benyq.tikbili.player.playback;
+package com.benyq.tikbili.player.player;
 
 public interface PlayerEvent {
 
@@ -68,6 +68,7 @@ public interface PlayerEvent {
         public static final int COMPLETED = 2008;
 
         public static final int ERROR = 2009;
+        public static final int PLAYING = 2010;
     }
 
     /**

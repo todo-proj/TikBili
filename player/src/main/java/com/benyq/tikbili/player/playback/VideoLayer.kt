@@ -53,7 +53,7 @@ abstract class VideoLayer: VideoView.VideoViewListener, VideoLayerHost.VideoLaye
     private fun unBindVideoView(videoView: VideoView?) {
         videoView?.let {
             videoView.removeVideoViewListener(this)
-            unBindVideoView(videoView)
+            onUnBindVideoView(videoView)
             videoView.controller()?.let { unbindController(it) }
         }
     }

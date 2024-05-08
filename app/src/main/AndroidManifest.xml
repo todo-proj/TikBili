@@ -17,7 +17,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".scene.horicontal.HorizontalVideoActivity"
+            android:name=".scene.horizontal.HorizontalVideoActivity"
             android:screenOrientation="landscape"
             android:exported="false" />
         <activity

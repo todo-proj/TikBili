@@ -3,7 +3,7 @@
     <rotate
         android:fromDegrees="0"
         android:toDegrees="-90"
-        android:duration="500"
+        android:duration="400"
         android:interpolator="@android:anim/accelerate_decelerate_interpolator"
         android:pivotX="50%"
         android:pivotY="50%" />

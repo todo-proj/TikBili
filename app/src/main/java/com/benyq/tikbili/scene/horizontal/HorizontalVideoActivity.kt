@@ -1,4 +1,4 @@
-package com.benyq.tikbili.scene.horicontal
+package com.benyq.tikbili.scene.horizontal
 
 import android.content.Context
 import android.content.Intent
@@ -11,12 +11,14 @@ import com.benyq.tikbili.player.helper.DisplayModeHelper
 import com.benyq.tikbili.player.playback.PlaybackController
 import com.benyq.tikbili.player.playback.VideoLayerHost
 import com.benyq.tikbili.player.source.MediaSource
-import com.benyq.tikbili.scene.horicontal.layer.BrightnessVolumeLayer
-import com.benyq.tikbili.scene.horicontal.layer.GestureLayer
-import com.benyq.tikbili.scene.horicontal.layer.PlayPauseLayer
-import com.benyq.tikbili.scene.horicontal.layer.SpeedSelectDialogLayer
-import com.benyq.tikbili.scene.horicontal.layer.TimeProgressBarLayer
-import com.benyq.tikbili.scene.horicontal.layer.TitleBarLayer
+import com.benyq.tikbili.scene.horizontal.layer.BrightnessVolumeLayer
+import com.benyq.tikbili.scene.horizontal.layer.GestureLayer
+import com.benyq.tikbili.scene.horizontal.layer.HorizontalCoverLayer
+import com.benyq.tikbili.scene.horizontal.layer.PlayPauseLayer
+import com.benyq.tikbili.scene.horizontal.layer.SpeedSelectDialogLayer
+import com.benyq.tikbili.scene.horizontal.layer.TimeProgressBarLayer
+import com.benyq.tikbili.scene.horizontal.layer.TitleBarLayer
+import com.benyq.tikbili.scene.shortvideo.layer.ShortVideoCoverLayer
 import com.benyq.tikbili.ui.base.BaseActivity
 import me.jessyan.autosize.internal.CustomAdapt
 
@@ -60,6 +62,7 @@ class HorizontalVideoActivity : BaseActivity<ActivityHorizontalVideoBinding>(), 
         layerHost.addLayer(PlayPauseLayer())
         layerHost.addLayer(SpeedSelectDialogLayer())
         layerHost.addLayer(BrightnessVolumeLayer())
+        layerHost.addLayer(HorizontalCoverLayer(HorizontalFrameHolder.get()))
         layerHost.attachToVideoView(dataBind.videoView)
         dataBind.videoView.bindDataSource(mediaSource)
         playbackController.bind(dataBind.videoView)
@@ -67,13 +70,13 @@ class HorizontalVideoActivity : BaseActivity<ActivityHorizontalVideoBinding>(), 
         dataBind.videoView.setupDisplayView()
         playbackController.startPlayback(continuePlay)
         playbackController.player()?.seekTo(currentPosition)
-
+        HorizontalFrameHolder.set(null)
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (!layerHost.onBackPressed()) {
                     isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
+                    handleBackPressed()
                 }else {
                     isEnabled = true
                 }
@@ -85,4 +88,12 @@ class HorizontalVideoActivity : BaseActivity<ActivityHorizontalVideoBinding>(), 
     override fun isBaseOnWidth() = true
 
     override fun getSizeInDp() = 640f
+
+    private fun handleBackPressed() {
+        dataBind.videoView.layerHost()?.findLayer(GestureLayer::class.java)?.dismissController()
+        playbackController.pausePlayback()
+
+        finish()
+        overridePendingTransition(R.anim.enter_animation, R.anim.exit_animation)
+    }
 }

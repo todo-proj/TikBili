@@ -3,11 +3,10 @@ package com.benyq.tikbili.player.download
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
-import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.PlayerConfig
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
-import com.benyq.tikbili.player.playback.PlayerEvent
+import com.benyq.tikbili.player.player.PlayerEvent
 import com.benyq.tikbili.player.player.event.ActionPrepare
 import com.benyq.tikbili.player.source.MediaSource
 import kotlin.math.max

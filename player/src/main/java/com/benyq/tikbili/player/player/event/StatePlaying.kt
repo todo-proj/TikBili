@@ -1,27 +1,26 @@
 package com.benyq.tikbili.player.player.event
 
-import android.view.Surface
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.player.PlayerEvent
 
 /**
  *
  * @author benyq
- * @date 4/11/2024
+ * @date 5/8/2024
  *
  */
-class ActionSetSurface: Event(PlayerEvent.Action.SET_SURFACE) {
+class StatePlaying: Event(PlayerEvent.State.PLAYING) {
 
-    var surface: Surface? = null
+    var isPlaying = false
         private set
 
-    fun init(surface: Surface): ActionSetSurface {
-       this.surface = surface
+    fun init(isPlaying: Boolean): StatePlaying {
+        this.isPlaying = isPlaying
         return this
     }
 
     override fun recycle() {
         super.recycle()
-        surface = null
+        isPlaying = false
     }
 }

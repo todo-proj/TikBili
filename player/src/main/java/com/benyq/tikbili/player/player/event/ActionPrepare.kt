@@ -1,7 +1,7 @@
 package com.benyq.tikbili.player.player.event
 
 import com.benyq.tikbili.player.dispather.Event
-import com.benyq.tikbili.player.playback.PlayerEvent
+import com.benyq.tikbili.player.player.PlayerEvent
 import com.benyq.tikbili.player.source.MediaSource
 
 /**

@@ -1,12 +1,10 @@
 package com.benyq.tikbili.scene.shortvideo.layer
 
 import android.view.Surface
-import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
-import com.benyq.tikbili.player.download.CacheLoader
 import com.benyq.tikbili.player.playback.PlaybackController
-import com.benyq.tikbili.player.playback.PlayerEvent
+import com.benyq.tikbili.player.player.PlayerEvent
 import com.benyq.tikbili.player.playback.layer.CoverLayer
 
 /**

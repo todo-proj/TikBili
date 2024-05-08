@@ -14,6 +14,7 @@ import com.benyq.tikbili.player.player.event.ActionStart
 import com.benyq.tikbili.player.player.event.InfoProgressUpdate
 import com.benyq.tikbili.player.player.event.InfoVideoRenderingStart
 import com.benyq.tikbili.player.player.event.StateCompleted
+import com.benyq.tikbili.player.player.event.StatePlaying
 import com.benyq.tikbili.player.source.MediaSource
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.MediaItem
@@ -76,6 +77,7 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
         }
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
+            L.d(this@ExoVideoPlayer, "onIsPlayingChanged", isPlaying)
             isVideoPlaying = isPlaying
             if (isPlaying) {
                 mainHandler.post(updateProgressAction)
@@ -83,6 +85,7 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
             }else {
                 mainHandler.removeCallbacks(updateProgressAction)
             }
+            _dispatcher.obtain(StatePlaying::class.java).init(isPlaying).dispatch()
         }
 
         override fun onPlayerError(error: PlaybackException) {

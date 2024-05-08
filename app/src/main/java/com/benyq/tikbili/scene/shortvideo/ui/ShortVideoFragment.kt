@@ -12,8 +12,9 @@ import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.databinding.FragmentShortVideoBinding
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
-import com.benyq.tikbili.scene.horicontal.HorizontalVideoActivity
+import com.benyq.tikbili.scene.horizontal.HorizontalVideoActivity
 import com.benyq.tikbili.scene.SceneEvent
+import com.benyq.tikbili.scene.horizontal.HorizontalFrameHolder
 import com.benyq.tikbili.scene.shortvideo.event.ActionCommentVisible
 import com.benyq.tikbili.scene.shortvideo.ui.comment.ShortVideoCommentView
 import com.benyq.tikbili.ui.base.BaseFragment
@@ -121,6 +122,8 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                     SceneEvent.Action.FULLSCREEN -> {
                         val data = dataBind.shortPage.controller().player()?.getDataSource() ?: return
                         val player = dataBind.shortPage.controller().player() ?: return
+                        val bitmap = dataBind.shortPage.controller().videoView()?.currentFrame()
+                        HorizontalFrameHolder.set(bitmap)
                         HorizontalVideoActivity.startActivity(requireActivity(), data, player.isPlaying(), player.getCurrentPosition())
                         requireActivity().overridePendingTransition(R.anim.enter_animation, R.anim.exit_animation)
                     }

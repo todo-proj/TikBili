@@ -2,8 +2,10 @@ package com.benyq.tikbili.player.playback
 
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.Surface
+import android.view.TextureView
 import android.view.View
 import android.widget.FrameLayout
 import com.benyq.tikbili.player.helper.DisplayModeHelper
@@ -158,6 +160,10 @@ class VideoView @JvmOverloads constructor(
         return _controller
     }
 
+    fun layerHost(): VideoLayerHost? {
+        return _layerHost
+    }
+
     fun dataSource(): MediaSource? {
         return _mediaSource
     }
@@ -172,6 +178,13 @@ class VideoView @JvmOverloads constructor(
 
     fun displayView(): View? {
         return _displayView?.displayView
+    }
+
+    fun currentFrame(): Bitmap? {
+        if (displayView() is TextureView) {
+            return (displayView() as TextureView).bitmap
+        }
+        return null
     }
 
     interface ViewEventListener {

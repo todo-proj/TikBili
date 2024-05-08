@@ -13,8 +13,7 @@ import com.benyq.tikbili.player.helper.DisplayModeHelper
 import com.benyq.tikbili.player.helper.DisplayModeHelper.calDisplayAspectRatio
 import com.benyq.tikbili.player.playback.PlaybackController
 import com.benyq.tikbili.player.playback.PlaybackEvent
-import com.benyq.tikbili.player.playback.PlayerEvent
-import com.benyq.tikbili.player.playback.VideoLayer
+import com.benyq.tikbili.player.player.PlayerEvent
 import com.benyq.tikbili.player.playback.layer.base.BaseLayer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -61,7 +60,7 @@ open class CoverLayer : BaseLayer() {
         load()
     }
 
-    protected fun load() {
+    protected open fun load() {
         val imageView = getView() as? ImageView ?: return
         val coverUrl = resolveCoverUrl() ?: return
         val activity = activity() ?: return
@@ -74,7 +73,7 @@ open class CoverLayer : BaseLayer() {
         return dataSource()?.coverUrl
     }
 
-    private val glideListener = object : RequestListener<Drawable> {
+    protected val glideListener = object : RequestListener<Drawable> {
         override fun onLoadFailed(
             e: GlideException?,
             model: Any?,

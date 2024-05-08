@@ -10,7 +10,7 @@ import com.benyq.tikbili.R
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.PlaybackController
-import com.benyq.tikbili.player.playback.PlayerEvent
+import com.benyq.tikbili.player.player.PlayerEvent
 import com.benyq.tikbili.player.playback.VideoLayer
 import com.benyq.tikbili.player.source.MediaSource
 import com.benyq.tikbili.scene.SceneEvent

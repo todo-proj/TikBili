@@ -1,4 +1,4 @@
-package com.benyq.tikbili.scene.horicontal.layer
+package com.benyq.tikbili.scene.horizontal.layer
 
 import android.content.Context
 import android.util.AttributeSet
