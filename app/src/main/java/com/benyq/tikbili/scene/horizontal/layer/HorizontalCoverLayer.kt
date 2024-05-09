@@ -3,6 +3,7 @@ package com.benyq.tikbili.scene.horizontal.layer
 import android.graphics.Bitmap
 import android.view.Surface
 import android.widget.ImageView
+import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
 import com.benyq.tikbili.player.playback.PlaybackController
@@ -52,12 +53,18 @@ class HorizontalCoverLayer(private val currentFrame: Bitmap?): CoverLayer() {
                 PlayerEvent.State.PLAYING -> {
                     val isPlaying = event.cast(StatePlaying::class.java).isPlaying
                     if (isPlaying) {
-                        dismiss()
-                        //remove self in order to mainly release bitmap
-                        videoView()?.layerHost()?.removeLayer(this@HorizontalCoverLayer)
+                        removeSelf()
                     }
+                }
+                PlayerEvent.State.PREPARED -> {
+                    removeSelf()
                 }
             }
         }
+    }
+
+    private fun removeSelf() {
+        //remove self in order to mainly release bitmap
+        videoView()?.layerHost()?.removeLayer(this@HorizontalCoverLayer)
     }
 }

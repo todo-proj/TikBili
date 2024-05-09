@@ -15,6 +15,7 @@ import com.benyq.tikbili.player.player.event.InfoProgressUpdate
 import com.benyq.tikbili.player.player.event.InfoVideoRenderingStart
 import com.benyq.tikbili.player.player.event.StateCompleted
 import com.benyq.tikbili.player.player.event.StatePlaying
+import com.benyq.tikbili.player.player.event.StatePrepared
 import com.benyq.tikbili.player.source.MediaSource
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.MediaItem
@@ -58,12 +59,8 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
 
         override fun onPlaybackStateChanged(state: Int) {
             if (state == Player.STATE_READY) {
-                if (isPreparing()) {
-                    setState(PlayState.STATE_PREPARED)
-                    if (startTime != -1L) {
-                        mSimpleExoPlayer.seekTo(startTime)
-                    }
-                }
+                setState(PlayState.STATE_PREPARED)
+                _dispatcher.obtain(StatePrepared::class.java).dispatch()
             }
             if (state == Player.STATE_ENDED) {
                 _dispatcher.obtain(StateCompleted::class.java).dispatch()
@@ -84,6 +81,7 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
                 setState(PlayState.STATE_STARTED)
             }else {
                 mainHandler.removeCallbacks(updateProgressAction)
+                setState(PlayState.STATE_PAUSED)
             }
             _dispatcher.obtain(StatePlaying::class.java).init(isPlaying).dispatch()
         }
@@ -138,6 +136,9 @@ class ExoVideoPlayer(private val context: Context): PlayerAdapter() {
                 .createMediaSource(mediaItem)
         mSimpleExoPlayer.setMediaSource(mediaSource)
         mSimpleExoPlayer.prepare()
+        if (startTime != -1L) {
+            mSimpleExoPlayer.seekTo(startTime)
+        }
     }
 
     override fun getDuration(): Long {
