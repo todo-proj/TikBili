@@ -24,5 +24,4 @@ data class CommentModel(
     }
 
     var formatMessage: Spanned? = null
-        private set
 }

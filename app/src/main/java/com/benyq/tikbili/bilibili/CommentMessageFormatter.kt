@@ -6,6 +6,8 @@ import android.text.Html
 import android.text.Spannable
 import android.text.Spanned
 import android.util.Log
+import com.benyq.tikbili.base.ext.px
+import com.benyq.tikbili.base.ext.sp
 import com.benyq.tikbili.bilibili.model.VideoReplyModel
 import com.bumptech.glide.Glide
 
@@ -18,9 +20,9 @@ import com.bumptech.glide.Glide
 class CommentMessageFormatter {
 
     companion object {
-        fun formatMessage(context: Context, message: String, emotes: Map<String, VideoReplyModel.Reply.Content.Emote>, size: Int = 0): Spanned {
+        fun formatMessage(context: Context, message: String, emotes: Map<String, VideoReplyModel.Reply.Content.Emote>?, size: Int = 0): Spanned {
             var newMessage: String = message
-            emotes.forEach { entity->
+            (emotes ?: emptyMap()).forEach { entity->
                 val key = entity.key
                 val value = entity.value
                 newMessage = message.replace(key, "<img src=\"${value.url}\">")

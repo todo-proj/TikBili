@@ -1,10 +1,16 @@
 package com.benyq.tikbili.scene.shortvideo.ui
 
 import android.app.Application
+import android.graphics.Paint
+import android.text.Spanned
 import androidx.lifecycle.viewModelScope
+import com.benyq.tikbili.base.ext.sp
+import com.benyq.tikbili.base.ext.textHeight
 import com.benyq.tikbili.base.ui.DataState
 import com.benyq.tikbili.base.ui.PageDataModel
 import com.benyq.tikbili.bilibili.BiliRemoteRepository
+import com.benyq.tikbili.bilibili.CommentMessageFormatter
+import com.benyq.tikbili.bilibili.model.VideoReplyModel
 import com.benyq.tikbili.scene.VideoItem
 import com.benyq.tikbili.scene.shortvideo.ui.comment.CommentModel
 import com.benyq.tikbili.ui.base.BaseViewModel
@@ -85,10 +91,17 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
             .onEach {
                 val data = it.map {
                     val result = mutableListOf<CommentModel>()
+                    val paintBig = Paint().apply {
+                        textSize = 16f.sp
+                    }
                     it.replies.forEach { reply ->
-                        result.add(CommentModel(CommentModel.TYPE_MAIN, reply))
+                        result.add(CommentModel(CommentModel.TYPE_MAIN, reply).apply {
+                            formatMessage = messageFormat(reply, paintBig)
+                        })
                         reply.replies.forEach { childReply ->
-                            result.add(CommentModel(CommentModel.TYPE_CHILD, childReply))
+                            result.add(CommentModel(CommentModel.TYPE_CHILD, childReply).apply {
+                                formatMessage = messageFormat(reply, paintBig)
+                            })
                         }
                     }
                     currentIndex++
@@ -97,5 +110,9 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
                 }
                 _commentEvent.emit(data)
             }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
+    }
+
+    private fun messageFormat(reply: VideoReplyModel.Reply, paint: Paint): Spanned {
+        return CommentMessageFormatter.formatMessage(getApplication(), reply.content.message, reply.content.emote, paint.textHeight().toInt())
     }
 }

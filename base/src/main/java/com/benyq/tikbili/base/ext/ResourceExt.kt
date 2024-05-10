@@ -2,6 +2,7 @@ package com.benyq.tikbili.base.ext
 
 import android.content.Context
 import android.content.res.Resources
+import android.util.TypedValue
 
 /**
  *
@@ -18,3 +19,6 @@ val Int.px: Int
 
 val Float.px: Float
     get() = this * Resources.getSystem().displayMetrics.density
+
+val Float.sp: Float
+    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this, Resources.getSystem().displayMetrics)

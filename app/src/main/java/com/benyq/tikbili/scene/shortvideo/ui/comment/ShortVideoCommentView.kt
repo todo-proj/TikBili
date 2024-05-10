@@ -80,7 +80,7 @@ class ShortVideoCommentView @JvmOverloads constructor(
             }
         })
         bottomSheetBehavior.isHideable = true
-        bottomSheetBehavior.peekHeight = 500.px
+//        bottomSheetBehavior.peekHeight = 500.px
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         binding.coordinator.setOnClickListener {
@@ -130,11 +130,11 @@ class ShortVideoCommentView @JvmOverloads constructor(
         if (!isVisible) {
             isVisible = true
         }
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     fun isShowing(): Boolean {
-        return isVisible || bottomSheetBehavior.state <= BottomSheetBehavior.STATE_COLLAPSED
+        return isVisible || bottomSheetBehavior.state <= BottomSheetBehavior.STATE_EXPANDED
     }
 
     /**
