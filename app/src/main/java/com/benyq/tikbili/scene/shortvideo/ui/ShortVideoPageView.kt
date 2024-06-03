@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 import com.benyq.tikbili.base.ext.findItemViewByPosition
+import com.benyq.tikbili.base.ext.recyclerView
 import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.player.VideoPlayerSettings
 import com.benyq.tikbili.player.dispather.Event
@@ -19,6 +20,7 @@ import com.benyq.tikbili.player.player.PlayerEvent
 import com.benyq.tikbili.player.playback.VideoView
 import com.benyq.tikbili.scene.VideoItem
 import com.benyq.tikbili.scene.widgets.viewpager2.OnPageChangeCallbackCompat
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 
 /**
  *
@@ -53,6 +55,9 @@ class ShortVideoPageView @JvmOverloads constructor(
                 _onPageChangeCallback?.onPageSelected(position)
             }
         })
+        viewPager.recyclerView()?.let {
+            OverScrollDecoratorHelper.setUpOverScroll(it, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+        }
         addView(viewPager, LayoutParams(
             LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT))

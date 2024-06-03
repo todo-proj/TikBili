@@ -65,6 +65,10 @@ fun ViewPager2.overScrollNever() {
     (child as? RecyclerView)?.overScrollMode = View.OVER_SCROLL_NEVER
 }
 
+fun ViewPager2.recyclerView(): RecyclerView? {
+    return getChildAt(0) as? RecyclerView
+}
+
 fun ViewPager2.isSlideToBottom(): Boolean {
     return (getChildAt(0) as? RecyclerView)?.isSlideToBottom() ?: false
 }

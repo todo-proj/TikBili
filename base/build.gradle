@@ -68,4 +68,6 @@ dependencies {
     api "io.github.cymchad:BaseRecyclerViewAdapterHelper4:4.1.4"
 
     api 'com.github.bumptech.glide:glide:4.16.0'
+    // https://github.com/EverythingMe/overscroll-decor   ios风格 over-scrolling effect
+    api 'io.github.everythingme:overscroll-decor-android:1.1.1'
 }
