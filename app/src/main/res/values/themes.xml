@@ -31,4 +31,10 @@
         <item name="android:windowIsFloating">true</item>
     </style>
 
+    <!--  解决BottomNavigation item 文字闪烁bug  -->
+    <!--  https://github.com/material-components/material-components-android/issues/530  -->
+    <style name="ThemeOverlay.BottomNavView" parent="">
+        <item name="motionDurationMedium4">0</item>
+    </style>
+
 </resources>

@@ -1,7 +1,10 @@
 package com.benyq.tikbili.scene.shortvideo.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
@@ -34,6 +37,11 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
     private var currentVid: String = ""
 
     override fun onFragmentCreated(savedInstanceState: Bundle?) {
+        ViewCompat.setOnApplyWindowInsetsListener(dataBind.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         val shortPageView = dataBind.shortPage
         shortPageView.setLifeCycle(lifecycle)
         lifecycleScope.launch {
@@ -144,5 +152,17 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
             return true
         }
         return false
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        val player = dataBind.shortPage.controller().player() ?: return
+        if (player.isInPlaybackState()) {
+            if (!hidden) {
+                player.pause()
+            }else {
+                player.start()
+            }
+        }
     }
 }

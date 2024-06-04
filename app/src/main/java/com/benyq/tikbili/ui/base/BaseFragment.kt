@@ -7,6 +7,7 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import com.benyq.tikbili.ui.LifeCycleLogObserver
 
 /**
  *
@@ -27,6 +28,7 @@ abstract class BaseFragment<DB : ViewDataBinding>(@LayoutRes layoutId: Int) : Fr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _dataBind = DataBindingUtil.bind(view)
+        viewLifecycleOwner.lifecycle.addObserver(LifeCycleLogObserver())
         onFragmentCreated(savedInstanceState)
     }
 
