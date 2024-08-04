@@ -125,7 +125,7 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                         val bitmap = dataBind.shortPage.controller().videoView()?.currentFrame()
                         HorizontalFrameHolder.set(bitmap)
                         HorizontalVideoActivity.startActivity(requireActivity(), data, player.isPlaying(), player.getCurrentPosition())
-                        requireActivity().overridePendingTransition(R.anim.enter_animation, R.anim.exit_animation)
+                        requireActivity().overridePendingTransition(R.anim.enter_animation, R.anim.exit_animation_alpha)
                     }
                 }
             }
