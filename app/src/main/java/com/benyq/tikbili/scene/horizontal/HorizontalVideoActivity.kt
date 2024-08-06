@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import com.benyq.tikbili.R
+import com.benyq.tikbili.base.ext.fromN
 import com.benyq.tikbili.base.ext.fullScreen
 import com.benyq.tikbili.databinding.ActivityHorizontalVideoBinding
 import com.benyq.tikbili.player.helper.DisplayModeHelper
@@ -18,7 +19,6 @@ import com.benyq.tikbili.scene.horizontal.layer.PlayPauseLayer
 import com.benyq.tikbili.scene.horizontal.layer.SpeedSelectDialogLayer
 import com.benyq.tikbili.scene.horizontal.layer.TimeProgressBarLayer
 import com.benyq.tikbili.scene.horizontal.layer.TitleBarLayer
-import com.benyq.tikbili.scene.shortvideo.layer.ShortVideoCoverLayer
 import com.benyq.tikbili.ui.base.BaseActivity
 import me.jessyan.autosize.internal.CustomAdapt
 
@@ -94,6 +94,12 @@ class HorizontalVideoActivity : BaseActivity<ActivityHorizontalVideoBinding>(), 
         playbackController.pausePlayback()
 
         finish()
-        overridePendingTransition(R.anim.enter_animation, R.anim.exit_animation)
+        overridePendingTransition(R.anim.exit_animation_alpha, R.anim.exit_animation)
+    }
+
+    override fun onUserLeaveHint() {
+        if (fromN()) {
+            enterPictureInPictureMode()
+        }
     }
 }
