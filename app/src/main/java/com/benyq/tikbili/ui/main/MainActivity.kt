@@ -80,14 +80,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 R.id.home_navigation_dynamic -> {
                     isAppearanceLightStatusBars(true)
                     showFragment(KEY_DYNAMIC)
+                    dataBind.sideDragLayout.avoidSlide = true
                 }
                 R.id.home_navigation_video -> {
                     isAppearanceLightStatusBars(false)
                     showFragment(KEY_VIDEO)
+                    dataBind.sideDragLayout.avoidSlide = false
                 }
                 R.id.home_navigation_mine -> {
                     isAppearanceLightStatusBars(true)
                     showFragment(KEY_MINE)
+                    dataBind.sideDragLayout.avoidSlide = true
                 }
             }
             true

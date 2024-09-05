@@ -8,6 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
+import com.benyq.tikbili.base.utils.L
+import kotlin.math.abs
+import kotlin.math.atan
+import kotlin.math.atan2
 
 
 /**
@@ -32,10 +36,11 @@ class SideDragLayout @JvmOverloads constructor(
 
     private val viewDragHelper: ViewDragHelper
     private var moveDistanceX = 0
+    var avoidSlide = false
 
     private val viewDragCallback = object : ViewDragHelper.Callback() {
         override fun tryCaptureView(child: View, pointerId: Int): Boolean {
-            return child == leftChild || child == centerChild || child == rightChild
+            return !avoidSlide && (child == leftChild || child == centerChild || child == rightChild)
         }
 
         override fun getViewHorizontalDragRange(child: View): Int {
@@ -139,32 +144,42 @@ class SideDragLayout @JvmOverloads constructor(
         )
     }
 
-
-    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-        return viewDragHelper.shouldInterceptTouchEvent(ev!!)
-    }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        when (event.action) {
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
                 touchX = event.x
                 touchY = event.y
             }
+        }
+        return super.dispatchTouchEvent(event)
+    }
 
+    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+        var intercept = true
+        when (event.action) {
             MotionEvent.ACTION_MOVE -> {
                 val moveX = event.x
                 val moveY = event.y
                 val dx: Float = moveX - touchX
                 val dy: Float = moveY - touchY
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    requestDisallowInterceptTouchEvent(true)
+                //还是算角度吧
+                val degree = atan(abs(dy.toDouble()) / abs(dx.toDouble())) * 180 / Math.PI
+                L.d(this, "onInterceptTouchEvent", degree)
+                if (degree > 15f) {
+                    intercept = false
                 }
-                touchX = moveX
-                touchY = moveY
             }
 
             MotionEvent.ACTION_UP -> {}
         }
+        if (!intercept) {
+            viewDragHelper.cancel()
+            return false
+        }
+        return viewDragHelper.shouldInterceptTouchEvent(event)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         viewDragHelper.processTouchEvent(event)
         return true
     }
