@@ -17,14 +17,14 @@
         tools:background="@color/black">
 
         <FrameLayout
-            android:layout_width="53dp"
-            android:layout_height="53dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginBottom="15dp">
 
             <com.benyq.tikbili.base.widget.ClipImageView
                 android:id="@+id/iv_avatar"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_gravity="center_horizontal"
                 app:bound_color="@color/white"
                 app:clip_type="circle"
@@ -51,11 +51,13 @@
             <ImageView
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
                 android:src="@drawable/ic_thumb_up" />
 
             <TextView
                 android:id="@+id/tv_thumb_up"
-                android:layout_width="50dp"
+                android:layout_width="45dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="@color/white"
@@ -74,11 +76,13 @@
             <ImageView
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
                 android:src="@drawable/ic_comment" />
 
             <TextView
                 android:id="@+id/tv_reply"
-                android:layout_width="50dp"
+                android:layout_width="45dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="@color/white"
@@ -101,7 +105,7 @@
 
             <TextView
                 android:id="@+id/tv_coin"
-                android:layout_width="50dp"
+                android:layout_width="45dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="@color/white"
@@ -124,7 +128,7 @@
 
             <TextView
                 android:id="@+id/tv_star"
-                android:layout_width="50dp"
+                android:layout_width="45dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="@color/white"
@@ -143,11 +147,13 @@
             <ImageView
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
                 android:src="@drawable/ic_share" />
 
             <TextView
                 android:id="@+id/tv_share"
-                android:layout_width="50dp"
+                android:layout_width="45dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="@color/white"

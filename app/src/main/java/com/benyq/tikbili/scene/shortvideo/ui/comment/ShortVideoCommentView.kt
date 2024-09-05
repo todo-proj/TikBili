@@ -80,7 +80,7 @@ class ShortVideoCommentView @JvmOverloads constructor(
             }
         })
         bottomSheetBehavior.isHideable = true
-//        bottomSheetBehavior.peekHeight = 500.px
+        bottomSheetBehavior.peekHeight = 500.px
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         binding.coordinator.setOnClickListener {
