@@ -43,7 +43,7 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
         flowResponse { repository.getRecommend() }
             .onEach {
                 val data = it.map { videoData ->
-                    val items = videoData.item.slice(0 until 5)
+                    val items = videoData.item.slice(0 until 10)
                     val result = mutableListOf<VideoItem>()
                     items.forEach { model ->
                         kotlin.runCatching {
@@ -74,7 +74,7 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
                                     )
                                 )
                             )
-                        }
+                        }.exceptionOrNull()?.printStackTrace()
                     }
                     result.toList()
                 }

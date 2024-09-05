@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 
 data class VideoDetailModel(
     @SerializedName("aid")
-    val aid: Int,
+    val aid: Long,
     @SerializedName("bvid")
     val bvid: String,
     @SerializedName("cid")
-    val cid: Int,
+    val cid: Long,
     @SerializedName("copyright")
     val copyright: Int,
     @SerializedName("ctime")
@@ -104,7 +104,7 @@ data class VideoDetailModel(
 
     data class Page(
         @SerializedName("cid")
-        val cid: Int,
+        val cid: Long,
         @SerializedName("dimension")
         val dimension: Dimension,
         @SerializedName("duration")
@@ -134,7 +134,7 @@ data class VideoDetailModel(
 
     data class Stat(
         @SerializedName("aid")
-        val aid: Int,
+        val aid: Long,
         @SerializedName("argue_msg")
         val argueMsg: String,
         @SerializedName("coin")
@@ -205,7 +205,7 @@ data class VideoDetailModel(
         ) {
             data class Episode(
                 @SerializedName("aid")
-                val aid: Int,
+                val aid: Long,
                 @SerializedName("arc")
                 val arc: Arc,
                 @SerializedName("attribute")
@@ -213,7 +213,7 @@ data class VideoDetailModel(
                 @SerializedName("bvid")
                 val bvid: String,
                 @SerializedName("cid")
-                val cid: Int,
+                val cid: Long,
                 @SerializedName("id")
                 val id: Int,
                 @SerializedName("page")
@@ -227,7 +227,7 @@ data class VideoDetailModel(
             ) {
                 data class Arc(
                     @SerializedName("aid")
-                    val aid: Int,
+                    val aid: Long,
                     @SerializedName("author")
                     val author: Author,
                     @SerializedName("copyright")
@@ -287,7 +287,7 @@ data class VideoDetailModel(
 
                     data class Stat(
                         @SerializedName("aid")
-                        val aid: Int,
+                        val aid: Long,
                         @SerializedName("argue_msg")
                         val argueMsg: String,
                         @SerializedName("coin")
@@ -321,7 +321,7 @@ data class VideoDetailModel(
 
                 data class Page(
                     @SerializedName("cid")
-                    val cid: Int,
+                    val cid: Long,
                     @SerializedName("dimension")
                     val dimension: Dimension,
                     @SerializedName("duration")
