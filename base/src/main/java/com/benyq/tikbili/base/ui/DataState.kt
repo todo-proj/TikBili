@@ -8,7 +8,7 @@ package com.benyq.tikbili.base.ui
  */
 sealed class DataState<T> {
     data class Success<T>(val data: T) : DataState<T>()
-    data class Error<T>(val error: Throwable?) : DataState<T>()
+    data class Error<T>(val error: Throwable?, val message: String = error?.message ?: "unknown error") : DataState<T>()
     data class Loading<T>(val loading: Boolean = false) : DataState<T>()
     inline fun <R> map(block: (T) -> R): DataState<R> {
         return when(this) {
@@ -16,7 +16,7 @@ sealed class DataState<T> {
                 Success(block(data))
             }
             is Error -> {
-                Error(error)
+                Error(error, message)
             }
             is Loading -> {
                 Loading(loading)

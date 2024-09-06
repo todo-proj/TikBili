@@ -1,7 +1,6 @@
 package com.benyq.tikbili.scene.shortvideo.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -12,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.benyq.tikbili.R
 import com.benyq.tikbili.base.ui.DataState
 import com.benyq.tikbili.base.utils.L
+import com.benyq.tikbili.base.utils.ToastTool
 import com.benyq.tikbili.databinding.FragmentShortVideoBinding
 import com.benyq.tikbili.player.dispather.Event
 import com.benyq.tikbili.player.dispather.EventDispatcher
@@ -20,6 +20,7 @@ import com.benyq.tikbili.scene.SceneEvent
 import com.benyq.tikbili.scene.horizontal.HorizontalFrameHolder
 import com.benyq.tikbili.scene.shortvideo.event.ActionCommentVisible
 import com.benyq.tikbili.scene.shortvideo.ui.comment.ShortVideoCommentView
+import com.benyq.tikbili.scene.widgets.load.LoadMoreAble
 import com.benyq.tikbili.ui.base.BaseFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
@@ -42,23 +43,7 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val shortPageView = dataBind.shortPage
-        shortPageView.setLifeCycle(lifecycle)
-        lifecycleScope.launch {
-            viewModel.videoEvent.collect {
-                when (it) {
-                    is DataState.Loading -> {
-                        dataBind.loading.isVisible = it.loading
-                    }
-
-                    is DataState.Success -> {
-                        shortPageView.setItems(it.data)
-                    }
-
-                    is DataState.Error -> {}
-                }
-            }
-        }
+        setupShortVideoPage()
         lifecycleScope.launch {
             viewModel.commentEvent.collect {
                 when (it) {
@@ -85,7 +70,6 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                 }
             }
         }
-
         dataBind.commentLayout.setOnCommentEventListener(object : ShortVideoCommentView.OnCommentEventListener {
 
             override fun loadMoreComments() {
@@ -103,7 +87,7 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
             }
 
             override fun changedOffset(bottomSheet: View, slideOffset: Float) {
-                val fullHeight = dataBind.flContainer.height
+                val fullHeight = dataBind.flContainer.height - (dataBind.flContainer.paddingTop + dataBind.flContainer.paddingBottom)
                 val offset = abs(slideOffset)
                 val newHeight = fullHeight - (1 - offset) * bottomSheet.height
                 dataBind.shortPage.updateLayoutParams {
@@ -113,24 +97,49 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
 
         })
         viewModel.getRecommend()
-        setupShortVideoPage()
     }
 
     private fun setupShortVideoPage() {
-        dataBind.shortPage.controller().addPlaybackListener(object : EventDispatcher.EventListener {
+        val shortPageView = dataBind.shortPage
+        shortPageView.setLifeCycle(lifecycle)
+        lifecycleScope.launch {
+            viewModel.videoEvent.collect {
+                when (it) {
+                    is DataState.Loading -> {
+                        dataBind.loading.isVisible = it.loading && shortPageView.isEmpty()
+                    }
+
+                    is DataState.Success -> {
+                        val data = it.data
+                        if (data.isFirst) {
+                            shortPageView.setItems(data.data)
+                        }else {
+                            shortPageView.appendItems(data.data)
+                            shortPageView.finishLoadingMore()
+                        }
+                    }
+
+                    is DataState.Error -> {
+                        shortPageView.finishLoadingMore()
+                        ToastTool.show(it.message)
+                    }
+                }
+            }
+        }
+        shortPageView.controller().addPlaybackListener(object : EventDispatcher.EventListener {
             override fun onEvent(event: Event) {
                 when (event.code) {
                     SceneEvent.Action.COMMENT -> {
                         L.d(this@ShortVideoFragment, "onEvent", event.code)
                         viewModel.queryVideoReply(currentVid, true)
-                        dataBind.shortPage.controller().dispatcher().obtain(ActionCommentVisible::class.java).init(true).dispatch()
+                        shortPageView.controller().dispatcher().obtain(ActionCommentVisible::class.java).init(true).dispatch()
                         dataBind.commentLayout.showComment()
                     }
                     SceneEvent.Action.THUMB_UP -> {}
                     SceneEvent.Action.FULLSCREEN -> {
-                        val data = dataBind.shortPage.controller().player()?.getDataSource() ?: return
-                        val player = dataBind.shortPage.controller().player() ?: return
-                        val bitmap = dataBind.shortPage.controller().videoView()?.currentFrame()
+                        val data = shortPageView.controller().player()?.getDataSource() ?: return
+                        val player = shortPageView.controller().player() ?: return
+                        val bitmap = shortPageView.controller().videoView()?.currentFrame()
                         HorizontalFrameHolder.set(bitmap)
                         HorizontalVideoActivity.startActivity(requireActivity(), data, player.isPlaying(), player.getCurrentPosition())
                         requireActivity().overridePendingTransition(R.anim.enter_animation, R.anim.exit_animation_alpha)
@@ -138,11 +147,18 @@ class ShortVideoFragment : BaseFragment<FragmentShortVideoBinding>(R.layout.frag
                 }
             }
         })
-        dataBind.shortPage.setOnPageChangeCallback {
+        shortPageView.setOnPageChangeCallback {
             dataBind.commentLayout.resetComment()
-            val currentItem = dataBind.shortPage.currentItem() ?: return@setOnPageChangeCallback
+            val currentItem = shortPageView.currentItem() ?: return@setOnPageChangeCallback
             currentVid = currentItem.id
         }
+
+        shortPageView.setOnLoadMoreListener(object : LoadMoreAble.OnLoadMoreListener {
+            override fun onLoadMore() {
+                shortPageView.startLoadingMore()
+                viewModel.getRecommend(true)
+            }
+        })
     }
 
 

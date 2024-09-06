@@ -33,13 +33,14 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
 
     private val repository = BiliRemoteRepository()
 
-    private val _videoEvent = MutableSharedFlow<DataState<List<VideoItem>>>()
+    //TODO 最好还是把refresh和loadMore分开，这样容易处理 loading和error的状态
+    private val _videoEvent = MutableSharedFlow<DataState<PageDataModel<List<VideoItem>>>>()
     val videoEvent = _videoEvent.asSharedFlow()
 
     private val _commentEvent = MutableSharedFlow<DataState<PageDataModel<List<CommentModel>>>>()
     val commentEvent = _commentEvent.asSharedFlow()
 
-    fun getRecommend() {
+    fun getRecommend(append: Boolean = false) {
         flowResponse { repository.getRecommend() }
             .onEach {
                 val data = it.map { videoData ->
@@ -76,7 +77,8 @@ class ShortVideoViewModel(app: Application) : BaseViewModel(app) {
                             )
                         }.exceptionOrNull()?.printStackTrace()
                     }
-                    result.toList()
+                    val data = result.toList()
+                    PageDataModel(data, !append, data.isEmpty())
                 }
                 _videoEvent.emit(data)
             }.flowOn(Dispatchers.IO).launchIn(viewModelScope)

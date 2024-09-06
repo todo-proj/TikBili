@@ -7,6 +7,7 @@ import com.benyq.tikbili.base.api.ApiThrowable
 import com.benyq.tikbili.base.api.SodaResponse
 import com.benyq.tikbili.base.coroutine.Coroutine
 import com.benyq.tikbili.base.ui.DataState
+import com.benyq.tikbili.base.utils.L
 import com.benyq.tikbili.bilibili.BiliRemoteRepository
 import com.benyq.tikbili.bilibili.model.BiliBiliResponse
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import java.net.UnknownHostException
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -71,9 +73,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }.flowOn(Dispatchers.IO)
             .onStart { emit(DataState.Loading(true)) }
-            .catch {
-                emit(DataState.Error<T>(it))
-            }
+            .catch { emit(handleNetworkError(it)) }
             .onCompletion {
                 emit(DataState.Loading(false))
             }
@@ -85,10 +85,23 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
             emit(DataState.Success(response))
         }.flowOn(Dispatchers.IO)
             .onStart { emit(DataState.Loading(true)) }
-            .catch { DataState.Error<T>(it) }
+            .catch { emit(handleNetworkError(it)) }
             .onCompletion {
                 emit(DataState.Loading(false))
             }
     }
 
+    private fun <T> handleNetworkError(e: Throwable): DataState<T> {
+        L.e(this, "handleNetworkError", e.toString())
+        when(e) {
+            // 服务器返回的错误码
+            is ApiThrowable -> {
+                return DataState.Error(e)
+            }
+            is UnknownHostException -> {
+                return DataState.Error(e, "网络连接异常")
+            }
+        }
+        return DataState.Error(e)
+    }
 }

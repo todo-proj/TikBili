@@ -15,6 +15,7 @@ import com.benyq.tikbili.scene.shortvideo.layer.ShortVideoCoverLayer
 import com.benyq.tikbili.scene.VideoItem
 import com.benyq.tikbili.scene.shortvideo.layer.FullScreenLayer
 import com.benyq.tikbili.scene.shortvideo.layer.ShortVideoProgressBarLayer
+import com.chad.library.adapter4.BaseQuickAdapter
 
 /**
  *
@@ -22,40 +23,30 @@ import com.benyq.tikbili.scene.shortvideo.layer.ShortVideoProgressBarLayer
  * @date 4/10/2024
  *
  */
-class ShortVideoAdapter : RecyclerView.Adapter<ShortVideoAdapter.ViewHolder>() {
+class ShortVideoAdapter : BaseQuickAdapter<VideoItem, ShortVideoAdapter.ViewHolder>() {
 
-    private val _items = mutableListOf<VideoItem>()
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun setItems(items: List<VideoItem>) {
-        _items.clear()
-        _items.addAll(items)
-        notifyDataSetChanged()
-    }
-
-    fun items() = _items
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        context: Context,
+        parent: ViewGroup,
+        viewType: Int
+    ): ViewHolder {
         return ViewHolder.create(parent)
     }
 
-    override fun getItemCount() = _items.size
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val mediaSource = _items.getOrNull(position)
-        if (mediaSource != null) {
-            holder.bind(mediaSource)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, item: VideoItem?) {
+        item?.let {
+            holder.bind(it)
         }
     }
 
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
         super.onViewDetachedFromWindow(holder)
-        holder.videoView.stopPlayback()
+        (holder as ViewHolder).videoView.stopPlayback()
     }
 
-    override fun onViewRecycled(holder: ViewHolder) {
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
-        holder.videoView.stopPlayback()
+        (holder as ViewHolder).videoView.stopPlayback()
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
